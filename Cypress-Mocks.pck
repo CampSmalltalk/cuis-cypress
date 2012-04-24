@@ -1,4 +1,4 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 12:36:08 am'!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 1:05:15 am'!
 'Description Please enter a description for this package '!
 !classDefinition: #CypressMockBasic category: #'Cypress-Mocks'!
 Object subclass: #CypressMockBasic
@@ -11,28 +11,8 @@ CypressMockBasic class
 	instanceVariableNames: 'current'!
 
 
-!CypressMockBasic commentStamp: 'dkh 4/24/2012 00:20' prior: 0!
-## Class Comment
-
-This mock contains basic class and instance method selectors.
-
- [**GitHub Flabored Markdown**][1] with **Smalltalk** sytax *highlighting*:
-
-```Smalltalk
-initialize
-	super initialize.
-	self name: 'Unknown'
-```
-
-And some [UTF8 samples][2]: 
-
-```
-UTF8 not handled correctly
-```
-
-
-[1]: http://github.github.com/github-flavored-markdown/
-[2]: http://www.columbia.edu/~fdc/utf8/!
+!CypressMockBasic commentStamp: 'dkh 4/24/2012 01:05' prior: 0!
+This mock contains basic class and instance method selectors!
 
 !CypressMockBasic methodsFor: 'accessing' stamp: 'dkh 4/24/2012 00:22'!
 extra

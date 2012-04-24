@@ -1,4 +1,4 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 12:36:12 am'!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 1:05:20 am'!
 'Description Please enter a description for this package '!
 !classDefinition: #CypressJsonParser category: #'Cypress-Structure'!
 Object subclass: #CypressJsonParser
@@ -673,7 +673,7 @@ extensions
 	^extensions
 ! !
 
-!CypressPackageStructure methodsFor: 'initialization'!
+!CypressPackageStructure methodsFor: 'initialization' stamp: 'dkh 4/24/2012 00:46'!
 fromJs: jsObject
 
 	name := jsObject at: 'name'.
@@ -681,12 +681,12 @@ fromJs: jsObject
 		classStructure := (CypressClassStructure new)
                 		packageStructure: self;
 				yourself.
-                ((objectName := jsClassObject at: 'name') match: '.extension$')
+                (  '*.extension' match:(objectName := jsClassObject at: 'name') )
 			ifTrue: [ 
 				classStructure isClassExtension: true.
 				self extensions add: classStructure ]
 			ifFalse: [
-				(objectName match: '.class$')
+				( '*.class' match: objectName)
 					ifTrue: [ 
 						classStructure isClassExtension: false.
 						self classes add: classStructure ]].

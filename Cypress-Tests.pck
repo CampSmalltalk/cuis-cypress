@@ -1,4 +1,4 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 12:36:15 am'!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 1:05:22 am'!
 'Description Please enter a description for this package '!
 !classDefinition: #CypressAbstractTest category: #'Cypress-Tests'!
 TestCase subclass: #CypressAbstractTest
@@ -61,7 +61,7 @@ CypressStructureTest class
 	instanceVariableNames: ''!
 
 
-!CypressAbstractTest methodsFor: 'private'!
+!CypressAbstractTest methodsFor: 'private' stamp: 'dkh 4/24/2012 01:03'!
 baseDefinitions
 	| className |
 	className := 'CypressMockBasic'.
@@ -72,7 +72,7 @@ baseDefinitions
        			category: 'Cypress-Mocks'
                        	instVarNames: #('name')
 			classInstVarNames: #('current')
-        		comment: self classComment).
+        		comment:  'This mock contains basic class and instance method selectors').
    	 	(CypressMethodDefinition
           		className: className
         		classIsMeta: false
@@ -133,10 +133,9 @@ baseDefinitions
 	}
 ! !
 
-!CypressAbstractTest methodsFor: 'private'!
+!CypressAbstractTest methodsFor: 'private' stamp: 'dkh 4/24/2012 00:45'!
 basePackageStructureJson
-
-	^'{
+    ^ '{
 	"name" : "Cypress-Mocks.package",
 	"contents" : [
 		{
@@ -171,21 +170,21 @@ basePackageStructureJson
 					"name" : "initialize.st",
 					"contents" : "initialization%0Ainitialize%0A%09self%20current%3A%20self%20new"
 				 }			],
-			"README.md" : "%23%23%20Class%20Comment%0A%0AThis%20mock%20contains%20basic%20class%20and%20instance%20method%20selectors.%0A%0A%20%5B**GitHub%20Flabored%20Markdown**%5D%5B1%5D%20with%20**Smalltalk**%20sytax%20*highlighting*%3A%0A%0A%60%60%60Smalltalk%0Ainitialize%0A%09super%20initialize.%0A%09self%20name%3A%20%27Unknown%27%0A%60%60%60%0A%0AAnd%20some%20%5BUTF8%20samples%5D%5B2%5D%3A%20%0A%0A%60%60%60%0A%20%20Lithuanian%3A%20A%u0161%20galiu%20valgyti%20stikl%u0105%20ir%20jis%20man%u0119s%20ne%u017Eeid%u017Eia%0A%20%20Russian%3A%20%u042F%20%u043C%u043E%u0433%u0443%20%u0435%u0441%u0442%u044C%20%u0441%u0442%u0435%u043A%u043B%u043E%2C%20%u043E%u043D%u043E%20%u043C%u043D%u0435%20%u043D%u0435%20%u0432%u0440%u0435%u0434%u0438%u0442.%0A%20%20Korean%3A%20%uB098%uB294%20%uC720%uB9AC%uB97C%20%uBA39%uC744%20%uC218%20%uC788%uC5B4%uC694.%20%uADF8%uB798%uB3C4%20%uC544%uD504%uC9C0%20%uC54A%uC544%uC694%0A%20%20Hebrew%3A%20%u05D0%u05E0%u05D9%20%u05D9%u05DB%u05D5%u05DC%20%u05DC%u05D0%u05DB%u05D5%u05DC%20%u05D6%u05DB%u05D5%u05DB%u05D9%u05EA%20%u05D5%u05D6%u05D4%20%u05DC%u05D0%20%u05DE%u05D6%u05D9%u05E7%20%u05DC%u05D9.%0A%20%20Latin%3A%20Vitrum%20edere%20possum%3B%20mihi%20non%20nocet.%0A%60%60%60%0A%0A%0A%5B1%5D%3A%20http%3A//github.github.com/github-flavored-markdown/%0A%5B2%5D%3A%20http%3A//www.columbia.edu/%7Efdc/utf8/",
+			"README.md" : "This%20mock%20contains%20basic%20class%20and%20instance%20method%20selectors",
 			"properties.json" : {
-				"name" : "CypressMockBasic",
-				"super" : "Object",
+				"classinstvars" : [
+					"current" ],
 				"instvars" : [
 					"name" ],
-				"classinstvars" : [
-					"current" ] }
+				"name" : "CypressMockBasic",
+				"super" : "Object" }
 		 },
 		{
 			"name" : "Object.extension",
 			"instance" : [
 				{
 					"name" : "isCypressMockBasic.st",
-					"contents" : "*Cypress-Mocks%0AisCypressMockBasic%0A%09%5Efalse"
+					"contents" : "%2ACypress-Mocks%0AisCypressMockBasic%0A%09%5Efalse"
 				 }			],
 			"class" : [
 			],
@@ -195,8 +194,7 @@ basePackageStructureJson
 	],
 	"properties.json" : {
 		 }
-}'
-! !
+}'! !
 
 !CypressAbstractTest methodsFor: 'private'!
 baseTargetPatch
@@ -246,30 +244,10 @@ baseTargetPatch
 	}
 ! !
 
-!CypressAbstractTest methodsFor: 'private' stamp: 'dkh 4/24/2012 00:15'!
+!CypressAbstractTest methodsFor: 'private' stamp: 'dkh 4/24/2012 01:04'!
 classComment
 
-	^'## Class Comment
-
-This mock contains basic class and instance method selectors.
-
- [**GitHub Flabored Markdown**][1] with **Smalltalk** sytax *highlighting*:
-
-```Smalltalk
-initialize
-	super initialize.
-	self name: ''Unknown''
-```
-
-And some [UTF8 samples][2]: 
-
-```
-UTF8 not handled correctly
-```
-
-
-[1]: http://github.github.com/github-flavored-markdown/
-[2]: http://www.columbia.edu/~fdc/utf8/'
+	^'This mock contains basic class and instance method selectors'
 ! !
 
 !CypressAbstractTest methodsFor: 'private' stamp: 'dkh 4/23/2012 21:33'!
@@ -361,12 +339,15 @@ targetDefinitions
 	}
 ! !
 
-!CypressAbstractTest methodsFor: 'private'!
+!CypressAbstractTest methodsFor: 'private' stamp: 'dkh 4/24/2012 00:55'!
 validatePackage: package against: expectedDefinitions
 
-	| packageDefinitions |
+	| packageDefinitions cd1 cd2 |
 	packageDefinitions := package snapshot definitions.
 	self assert: (expectedDefinitions size = packageDefinitions size).
+	cd1 := packageDefinitions detect: [:each | each isKindOf: CypressClassDefinition].
+	cd2 :=  expectedDefinitions detect: [:each | each isKindOf: CypressClassDefinition].
+	self assert: cd1 = cd2.
 	packageDefinitions do: [:def |
 		(expectedDefinitions includes: def)
 			ifFalse: [ 
@@ -548,7 +529,7 @@ testSnapshotEquality
 	self assert: packageDefinitions asArray = expectedDefinitions asArray
 ! !
 
-!CypressStructureTest methodsFor: 'tests'!
+!CypressStructureTest methodsFor: 'tests' stamp: 'dkh 4/24/2012 00:59'!
 testClassStructure
 
 	| jsObject packageStructure classStructure classProperties |
@@ -557,7 +538,7 @@ testClassStructure
 	classStructure := packageStructure classes first.
 	self assert: classStructure name = 'CypressMockBasic'.
 	self deny: classStructure isClassExtension.
-	self assert: classStructure comment = self classComment.
+	self assert: classStructure comment =  'This mock contains basic class and instance method selectors'..
 	classProperties := classStructure properties.
 	self assert: classProperties size = 4.
 	self assert: (classProperties at: 'instvars') = #('name').
@@ -612,7 +593,7 @@ testPackageStructureSnapshot
 	self validatePackage: packageStructure against: self baseDefinitions
 ! !
 
-!CypressStructureTest methodsFor: 'tests' stamp: 'dkh 4/23/2012 20:25'!
+!CypressStructureTest methodsFor: 'tests' stamp: 'dkh 4/24/2012 00:38'!
 testPackageStructureToJson
 
 	| packageStructure stream json |
@@ -620,7 +601,7 @@ testPackageStructureToJson
 	stream := WriteStream on: String new.
 	packageStructure writeJsonOn: stream.
 	json := stream contents.
-	self assert: self basePackageStructureJson = json
+	self assert: (self basePackageStructureJson withLineEndings: String lfString) = (json withLineEndings: String lfString)
 ! !
 
 !CypressStructureTest methodsFor: 'tests'!
