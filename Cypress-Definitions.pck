@@ -1,4 +1,4 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 23 April 2012 at 8:40:37 pm'!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 23 April 2012 at 9:09:13 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #CypressDefinition category: #'Cypress-Definitions'!
 Object subclass: #CypressDefinition
@@ -131,27 +131,32 @@ CypressSnapshot class
 	instanceVariableNames: ''!
 
 
-!Class methodsFor: '*Cypress-Definitions'!
+!Class methodsFor: '*Cypress-Definitions' stamp: 'dkh 4/23/2012 20:54'!
 asCypressClassDefinition
 	^CypressClassDefinition
 		name: self name
 		superclassName: self superclass name
 		category: self category 
-		instVarNames: self instanceVariableNames
-		classInstVarNames: self class instanceVariableNames
+		instVarNames: self instVarNames
+		classInstVarNames: self class instVarNames
 		comment: self comment
 ! !
 
-!CompiledMethod methodsFor: '*Cypress-Definitions'!
+!CompiledMethod methodsFor: '*Cypress-Definitions' stamp: 'dkh 4/23/2012 21:02'!
 asCypressMethodDefinition
 
 	^CypressMethodDefinition 
-        	className: (self methodClass isMetaclass ifTrue: [ self methodClass instanceClass ] ifFalse: [ self methodClass ]) name
-		classIsMeta: self methodClass isMetaclass
+        	className: (self methodClass isMeta ifTrue: [ self methodClass theNonMetaClass ] ifFalse: [ self methodClass ]) name
+		classIsMeta: self methodClass isMeta
 		selector: self selector
 		category: self category
-		source: self source
+		source: self getSource
 ! !
+
+!CompiledMethod methodsFor: '*Cypress-Definitions' stamp: 'dkh 4/23/2012 21:01'!
+category
+
+	^self methodClass organization categoryOfElement: self selector! !
 
 !CypressAddition methodsFor: 'comparing'!
 = aPatchOperation
@@ -720,9 +725,9 @@ postLoad: aPatchOperation
 	aPatchOperation postLoadDefinition
 ! !
 
-!CypressLoader methodsFor: 'accessing'!
+!CypressLoader methodsFor: 'accessing' stamp: 'dkh 4/23/2012 21:03'!
 provisions
-	^ provisions ifNil: [provisions := (Smalltalk current classes collect: [:cl | cl name]) asSet ]
+	^ provisions ifNil: [provisions := (Smalltalk classes collect: [:cl | cl name]) asSet ]
 ! !
 
 !CypressLoader methodsFor: 'accessing'!
@@ -1027,29 +1032,45 @@ printString
 	^super printString, '(', name, ')'
 ! !
 
-!CypressPackageDefinition methodsFor: 'snapshotting'!
+!CypressPackageDefinition methodsFor: 'snapshotting' stamp: 'dkh 4/23/2012 20:53'!
 snapshot
-	| package definitions name map  |
-	package := Package named: self name.
-	definitions := OrderedCollection new.
-	package sortedClasses do: [:cls |
-        	definitions add: cls asCypressClassDefinition.
-                ((cls methodDictionary values) sorted: [:a :b | a selector <= b selector]) do: [:method |
-			(method category match: '^\*') ifFalse: [ 
-				definitions add: method asCypressMethodDefinition ]].
-                ((cls class methodDictionary values) sorted: [:a :b | a selector <= b selector]) do: [:method |
-			(method category match: '^\*') ifFalse: [ 
-				definitions add: method asCypressMethodDefinition ]]].
-	name := package name.
-	(Package sortedClasses: Smalltalk current classes) do: [:each |
-		{each. each class} do: [:aClass |
-			map := Dictionary new.
-			aClass protocolsDo: [:category :methods | 
-				(category match: '^\*', name) ifTrue: [ map at: category put: methods ]].
-			(map keys sorted: [:a :b | a <= b ])  do: [:category | 
-				((map at: category) sorted: [:a :b | a selector <= b selector]) do: [:method |  definitions add: method asCypressMethodDefinition ]]]].
-	^ CypressSnapshot definitions: definitions
-! !
+    | package definitions map classMap |
+    package := CodePackage named: self name.
+    definitions := OrderedCollection new.
+    (ChangeSet superclassOrder: package classes)
+        do: [ :cls | 
+            definitions add: cls asCypressClassDefinition.
+            (cls methodDictionary values sorted: [ :a :b | a selector <= b selector ])
+                do: [ :method | 
+                    (method category at: 1) = $*
+                        ifFalse: [ definitions add: method asCypressMethodDefinition ] ].
+            (cls class methodDictionary values sorted: [ :a :b | a selector <= b selector ])
+                do: [ :method | 
+                    (method category at: 1) = $*
+                        ifFalse: [ definitions add: method asCypressMethodDefinition ] ] ].
+    classMap := Dictionary new.
+    Smalltalk allClasses
+        do: [ :each | 
+            {each.
+            (each class)}
+                do: [ :aClass | 
+                    | defs |
+                    defs := OrderedCollection new.
+                    map := Dictionary new.
+                    aClass organization categories
+                        do: [ :category | 
+                            | methods |
+                            methods := aClass organization listAtCategoryNamed: category.
+                            (category asLowercase beginsWith: '*' , self name asLowercase)
+                                ifTrue: [ map at: category put: methods ] ].
+                    (map keys sorted: [ :a :b | a <= b ])
+                        do: [ :category | 
+                            ((map at: category) sorted: [ :a :b | a selector <= b selector ])
+                                do: [ :method | defs add: (aClass compiledMethodAt: method) asCypressMethodDefinition ] ].
+                    defs notEmpty
+                        ifTrue: [ classMap at: each put: defs ] ] ].
+    (ChangeSet superclassOrder: classMap keys) do: [ :aClass | definitions addAll: (classMap at: aClass) ].
+    ^ CypressSnapshot definitions: definitions! !
 
 !CypressPatch methodsFor: 'applying'!
 applyTo: aCypressLoader
@@ -1268,3 +1289,8 @@ definitions: aDefinitions
 
 	^(self new) definitions: aDefinitions
 ! !
+
+!SystemDictionary methodsFor: '*Cypress-Definitions' stamp: 'dkh 4/23/2012 21:06'!
+classes
+
+	^self classNames collect: [:each | self at: each ]! !
