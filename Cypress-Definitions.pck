@@ -1,4 +1,4 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 12:04:39 am'!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 12:36:04 am'!
 'Description Please enter a description for this package '!
 !classDefinition: #CypressDefinition category: #'Cypress-Definitions'!
 Object subclass: #CypressDefinition
@@ -822,14 +822,14 @@ className
 	^className
 ! !
 
-!CypressMethodDefinition methodsFor: 'initialization'!
+!CypressMethodDefinition methodsFor: 'initialization' stamp: 'dkh 4/24/2012 00:27'!
 className: aName classIsMeta: isMetaclass selector: aSelector category: aCategory source: aSource
 
-	className := aName.
+	className := aName asSymbol.
 	classIsMeta := isMetaclass.
-	selector := aSelector.
-	category := aCategory.
-	source := aSource.
+	selector := aSelector asSymbol.
+	category := aCategory asSymbol.
+	source := aSource withLineEndings: String lfString.
 ! !
 
 !CypressMethodDefinition methodsFor: 'accessing'!

@@ -1,4 +1,4 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 12:04:43 am'!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 12:36:12 am'!
 'Description Please enter a description for this package '!
 !classDefinition: #CypressJsonParser category: #'Cypress-Structure'!
 Object subclass: #CypressJsonParser
@@ -548,19 +548,29 @@ isMetaclass: aBoolean
 	isMetaclass := aBoolean
 ! !
 
-!CypressMethodStructure methodsFor: 'accessing'!
+!CypressMethodStructure methodsFor: 'accessing' stamp: 'dkh 4/24/2012 00:07'!
 selector
+    ^ String
+        streamContents: [ :stream | 
+            self name
+                do: [ :chara | 
+                    stream
+                        nextPut:
+                            (chara = $.
+                                ifTrue: [ $: ]
+                                ifFalse: [ chara ]) ] ]! !
 
-	^String
-		streamContents: [:stream | self name do: [:chara | stream nextPutAll: (chara = '.' ifTrue:  [ ':' ] ifFalse: [ chara ])]]
-! !
-
-!CypressMethodStructure methodsFor: 'accessing'!
+!CypressMethodStructure methodsFor: 'accessing' stamp: 'dkh 4/24/2012 00:06'!
 selector: aString
-
-	name := String
-		streamContents: [:stream | aString do: [:chara | stream nextPutAll: (chara = ':' ifTrue:  [ '.' ] ifFalse: [ chara ])]]
-! !
+    name := String
+        streamContents: [ :stream | 
+            aString
+                do: [ :chara | 
+                    stream
+                        nextPut:
+                            (chara = $:
+                                ifTrue: [ $. ]
+                                ifFalse: [ chara ]) ] ]! !
 
 !CypressMethodStructure methodsFor: 'accessing'!
 source

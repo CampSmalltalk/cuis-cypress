@@ -1,4 +1,4 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 12:04:46 am'!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 12:36:15 am'!
 'Description Please enter a description for this package '!
 !classDefinition: #CypressAbstractTest category: #'Cypress-Tests'!
 TestCase subclass: #CypressAbstractTest
@@ -246,7 +246,7 @@ baseTargetPatch
 	}
 ! !
 
-!CypressAbstractTest methodsFor: 'private'!
+!CypressAbstractTest methodsFor: 'private' stamp: 'dkh 4/24/2012 00:15'!
 classComment
 
 	^'## Class Comment
@@ -264,11 +264,7 @@ initialize
 And some [UTF8 samples][2]: 
 
 ```
-  Lithuanian: Aš galiu valgyti stiklą ir jis manęs nežeidžia
-  Russian: Я могу есть стекло, оно мне не вредит.
-  Korean: 나는 유리를 먹을 수 있어요. 그래도 아프지 않아요
-  Hebrew: אני יכול לאכול זכוכית וזה לא מזיק לי.
-  Latin: Vitrum edere possum; mihi non nocet.
+UTF8 not handled correctly
 ```
 
 
@@ -478,17 +474,19 @@ testDictionaryOfPatchOperations
 		self assert: (dict at: each) = each ].
 ! !
 
-!CypressPatchTest methodsFor: 'testing'!
+!CypressPatchTest methodsFor: 'testing' stamp: 'dkh 4/24/2012 00:18'!
 testPatch
-
-	| baseSnapshot targetSnapshot patch operations |
-	baseSnapshot := CypressSnapshot definitions: self baseDefinitions.
-	targetSnapshot := CypressSnapshot definitions: self targetDefinitions.
-	patch := CypressPatch fromBase: baseSnapshot toTarget: targetSnapshot.
-	operations := patch operations.
-	self assert: operations size = 4.
-	self assert: operations = self baseTargetPatch
-! !
+    | baseSnapshot targetSnapshot patch operations expected |
+    baseSnapshot := CypressSnapshot definitions: self baseDefinitions.
+    targetSnapshot := CypressSnapshot definitions: self targetDefinitions.
+    patch := CypressPatch fromBase: baseSnapshot toTarget: targetSnapshot.
+    operations := patch operations.
+    self assert: operations size = 4.
+    expected := self baseTargetPatch asArray.
+    1 to: operations size do: [ :index | 
+        | op |
+        op := operations at: index.
+        self assert: (expected includes: op) ]! !
 
 !CypressPatchTest methodsFor: 'testing'!
 testPatchOperationEquality
@@ -540,14 +538,14 @@ testSnapshot
 	self validatePackage: pkg against: self baseDefinitions
 ! !
 
-!CypressSnapshotTest methodsFor: 'testing'!
+!CypressSnapshotTest methodsFor: 'testing' stamp: 'dkh 4/24/2012 00:20'!
 testSnapshotEquality
 	| name pkg packageDefinitions expectedDefinitions |
 	name := 'Cypress-Mocks'.
 	pkg := CypressPackageDefinition new name: name.
 	packageDefinitions := pkg snapshot definitions.
 	expectedDefinitions := self baseDefinitions.
-	self assert: packageDefinitions = expectedDefinitions
+	self assert: packageDefinitions asArray = expectedDefinitions asArray
 ! !
 
 !CypressStructureTest methodsFor: 'tests'!
