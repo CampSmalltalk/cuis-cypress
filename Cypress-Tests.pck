@@ -1,9 +1,65 @@
+'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 23 April 2012 at 8:40:48 pm'!
+'Description Please enter a description for this package '!
 !classDefinition: #CypressAbstractTest category: #'Cypress-Tests'!
 TestCase subclass: #CypressAbstractTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Cypress-Tests'!
+!classDefinition: 'CypressAbstractTest class' category: #'Cypress-Tests'!
+CypressAbstractTest class
+	instanceVariableNames: ''!
+
+!classDefinition: #CypressDefinitionTest category: #'Cypress-Tests'!
+CypressAbstractTest subclass: #CypressDefinitionTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Cypress-Tests'!
+!classDefinition: 'CypressDefinitionTest class' category: #'Cypress-Tests'!
+CypressDefinitionTest class
+	instanceVariableNames: ''!
+
+!classDefinition: #CypressLoaderTest category: #'Cypress-Tests'!
+CypressAbstractTest subclass: #CypressLoaderTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Cypress-Tests'!
+!classDefinition: 'CypressLoaderTest class' category: #'Cypress-Tests'!
+CypressLoaderTest class
+	instanceVariableNames: ''!
+
+!classDefinition: #CypressPatchTest category: #'Cypress-Tests'!
+CypressAbstractTest subclass: #CypressPatchTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Cypress-Tests'!
+!classDefinition: 'CypressPatchTest class' category: #'Cypress-Tests'!
+CypressPatchTest class
+	instanceVariableNames: ''!
+
+!classDefinition: #CypressSnapshotTest category: #'Cypress-Tests'!
+CypressAbstractTest subclass: #CypressSnapshotTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Cypress-Tests'!
+!classDefinition: 'CypressSnapshotTest class' category: #'Cypress-Tests'!
+CypressSnapshotTest class
+	instanceVariableNames: ''!
+
+!classDefinition: #CypressStructureTest category: #'Cypress-Tests'!
+CypressAbstractTest subclass: #CypressStructureTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Cypress-Tests'!
+!classDefinition: 'CypressStructureTest class' category: #'Cypress-Tests'!
+CypressStructureTest class
+	instanceVariableNames: ''!
+
 
 !CypressAbstractTest methodsFor: 'private'!
 baseDefinitions
@@ -323,14 +379,6 @@ validatePackage: package against: expectedDefinitions
 				self assert: false ]].
 ! !
 
-
-!classDefinition: #CypressDefinitionTest category: #'Cypress-Tests'!
-CypressAbstractTest subclass: #CypressDefinitionTest
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Cypress-Tests'!
-
 !CypressDefinitionTest methodsFor: 'testing'!
 testClassDefinition
 	self assert: (CypressClassDefinition
@@ -400,14 +448,6 @@ testPrintString
 	self assert: 'a CypressPackageDefinition(', name, ')' equals: pkg printString.
 ! !
 
-
-!classDefinition: #CypressLoaderTest category: #'Cypress-Tests'!
-CypressAbstractTest subclass: #CypressLoaderTest
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Cypress-Tests'!
-
 !CypressLoaderTest methodsFor: 'running'!
 tearDown
 
@@ -418,7 +458,6 @@ tearDown
 		 updatePackage: (CypressPackageDefinition new name: name)
 ! !
 
-
 !CypressLoaderTest methodsFor: 'testing'!
 testLoad
 
@@ -427,14 +466,6 @@ testLoad
 	(CypressSnapshot definitions: self targetDefinitions)
 		 updatePackage: (CypressPackageDefinition new name: name)
 ! !
-
-
-!classDefinition: #CypressPatchTest category: #'Cypress-Tests'!
-CypressAbstractTest subclass: #CypressPatchTest
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Cypress-Tests'!
 
 !CypressPatchTest methodsFor: 'testing'!
 testDictionaryOfPatchOperations
@@ -502,14 +533,6 @@ testPatchOperationEquality
 	self assert: addition = addition.
 ! !
 
-
-!classDefinition: #CypressSnapshotTest category: #'Cypress-Tests'!
-CypressAbstractTest subclass: #CypressSnapshotTest
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Cypress-Tests'!
-
 !CypressSnapshotTest methodsFor: 'testing'!
 testSnapshot
 	| name pkg  |
@@ -527,14 +550,6 @@ testSnapshotEquality
 	expectedDefinitions := self baseDefinitions.
 	self assert: packageDefinitions = expectedDefinitions
 ! !
-
-
-!classDefinition: #CypressStructureTest category: #'Cypress-Tests'!
-CypressAbstractTest subclass: #CypressStructureTest
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Cypress-Tests'!
 
 !CypressStructureTest methodsFor: 'tests'!
 testClassStructure
