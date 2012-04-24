@@ -1,4 +1,4 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 23 April 2012 at 9:33:58 pm'!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 12:04:39 am'!
 'Description Please enter a description for this package '!
 !classDefinition: #CypressDefinition category: #'Cypress-Definitions'!
 Object subclass: #CypressDefinition
@@ -181,11 +181,9 @@ definition: aDefinition
 	definition := aDefinition
 ! !
 
-!CypressAddition methodsFor: 'accessing'!
+!CypressAddition methodsFor: 'accessing' stamp: 'dkh 4/23/2012 23:22'!
 description
-
-	^'add: ', self definition description
-! !
+    ^ 'add: ' , self definition printString! !
 
 !CypressAddition methodsFor: 'loading'!
 loadClassDefinition
@@ -842,6 +840,15 @@ description
 		with: classIsMeta
 ! !
 
+!CypressMethodDefinition methodsFor: 'comparing' stamp: 'dkh 4/23/2012 23:20'!
+hash
+    | hash |
+    hash := String stringHash: classIsMeta asString initialHash: 0.
+    hash := String stringHash: source initialHash: hash.
+    hash := String stringHash: category initialHash: hash.
+    hash := String stringHash: className initialHash: hash.
+    ^ hash! !
+
 !CypressMethodDefinition methodsFor: 'visiting'!
 instanceMethod: instanceBlock classMethod: classBlock
 
@@ -955,11 +962,9 @@ base: base target: target
 	modification := target.
 ! !
 
-!CypressModification methodsFor: 'accessing'!
+!CypressModification methodsFor: 'accessing' stamp: 'dkh 4/23/2012 23:22'!
 description
-
-	^'modify from: ', self obsoletion description, ' to: ', self modification description
-! !
+    ^ 'modify from: ' , self obsoletion printString , ' to: ' , self modification printString! !
 
 !CypressModification methodsFor: 'loading'!
 loadClassDefinition
@@ -1138,6 +1143,10 @@ description
 	self subclassResponsibility
 ! !
 
+!CypressPatchOperation methodsFor: 'comparing' stamp: 'dkh 4/23/2012 23:21'!
+hash
+    ^ self description hash! !
+
 !CypressPatchOperation methodsFor: 'loading'!
 loadClassDefinition
 
@@ -1197,10 +1206,10 @@ definition: aDefinition
 	definition := aDefinition
 ! !
 
-!CypressRemoval methodsFor: 'accessing'!
+!CypressRemoval methodsFor: 'accessing' stamp: 'dkh 4/23/2012 23:23'!
 description
 
-	^'remove: ', self definition description
+	^'remove: ', self definition printString
 ! !
 
 !CypressRemoval methodsFor: 'loading'!

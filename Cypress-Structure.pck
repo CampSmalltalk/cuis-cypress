@@ -1,4 +1,4 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 23 April 2012 at 8:40:45 pm'!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 12:04:43 am'!
 'Description Please enter a description for this package '!
 !classDefinition: #CypressJsonParser category: #'Cypress-Structure'!
 Object subclass: #CypressJsonParser
@@ -77,19 +77,19 @@ asCypressPropertyObject
 	^self collect: [:each | each asCypressPropertyObject ]
 ! !
 
-!Array methodsFor: '*Cypress-Structure'!
+!Array methodsFor: '*Cypress-Structure' stamp: 'dkh 4/23/2012 23:36'!
 writeCypressJsonOn: aStream  indent: startIndent
 
 	| indent |
 	aStream 
 		nextPutAll: '[';
-		lf.
+		newLine.
 	indent := startIndent + 1.
 	1 to: self size do: [:index | | item | 
 		item := self at: index.
 		aStream tab: indent.
 		item writeCypressJsonOn: aStream  indent: indent.
-		index < self size ifTrue: [ aStream nextPutAll: ','; lf ]].
+		index < self size ifTrue: [ aStream nextPutAll: ','; newLine ]].
 	self size = 0 ifTrue: [ aStream tab: indent ].
 	aStream nextPutAll: ' ]'
 ! !
@@ -99,6 +99,15 @@ writeCypressJsonOn: aStream  indent: startIndent
 
 	aStream 
 		nextPutAll: self printString
+! !
+
+!Character methodsFor: '*Cypress-Structure' stamp: 'dkh 4/23/2012 23:50'!
+isSafeForHTTP
+	"whether a character is 'safe', or needs to be escaped when used, eg, in a URL"
+
+	^  value < 128
+		and: [ self isAlphaNumeric
+				or: [ '.-_' includes: self ]]
 ! !
 
 !CypressClassStructure methodsFor: 'converting'!
@@ -246,19 +255,23 @@ name: aString
 	self properties at: 'name' put: aString
 ! !
 
-!CypressClassStructure methodsFor: 'private'!
-splitMethodNameFor: jsMethodObject
+!CypressClassStructure methodsFor: 'private' stamp: 'dkh 4/23/2012 23:25'!
+splitMethodName: methodName
 
-	| ext methodName |
-	methodName := jsMethodObject at: 'name'.
+	| ext  |
 	ext := '.json'.
-	(methodName match: ext, '$')
+	(   '*' , ext match: methodName)
 		ifFalse: [
 			ext := '.st'.
-			(methodName match: ext, '$')
+			('*' , ext match: methodName)
 				ifFalse: [ self error: 'invalid structure element: ', methodName ] ].
 	^{methodName copyFrom: 1 to: (methodName size - ext size). ext}
 ! !
+
+!CypressClassStructure methodsFor: 'private' stamp: 'dkh 4/23/2012 23:24'!
+splitMethodNameFor: jsMethodObject
+
+	^self splitMethodName: (jsMethodObject at: 'name')! !
 
 !CypressClassStructure methodsFor: 'accessing'!
 superclassName
@@ -272,7 +285,7 @@ superclassName: aString
 	^self properties at: 'super' put: aString
 ! !
 
-!CypressClassStructure methodsFor: 'writing'!
+!CypressClassStructure methodsFor: 'writing' stamp: 'dkh 4/23/2012 23:38'!
 writeJsonOn: aStream  indent: startIndent
 
 	| indent methods |
@@ -280,39 +293,39 @@ writeJsonOn: aStream  indent: startIndent
 	aStream 
 		tab: indent;
 		nextPutAll: '{';
-		lf.
+		newLine.
 	indent := indent + 1.
 	aStream
 		tab: indent;
 		nextPutAll: '"name"';
 		nextPutAll: ' : ';
 		nextPutAll: '"', self name, (self isClassExtension ifTrue: [ '.extension' ] ifFalse: [ '.class' ]), '",';
-		lf.
+		newLine.
 	aStream
 		tab: indent;
 		nextPutAll: '"instance" : [';
-		lf;
+		newLine;
 		yourself.
 	methods := self instanceMethods values asArray sorted: [:a :b | a selector <= b selector].
 	1 to: methods size do: [:index | | methodStructure | 
 		methodStructure := methods at: index.
 		methodStructure writeJsonOn: aStream indent: indent + 1.
-		index < methods size ifTrue: [ aStream nextPutAll: ','; lf ]].
+		index < methods size ifTrue: [ aStream nextPutAll: ','; newLine ]].
 	aStream
 		tab: indent;
 		nextPutAll: '],';
-		lf;
+		newLine;
 		yourself.
 	aStream
 		tab: indent;
 		nextPutAll: '"class" : [';
-		lf;
+		newLine;
 		yourself.
 	methods := self classMethods values asArray sorted: [:a :b | a selector <= b selector].
 	1 to: methods size do: [:index | | methodStructure | 
 		methodStructure := methods at: index.
 		methodStructure writeJsonOn: aStream indent: indent + 1.
-		index < methods size ifTrue: [ aStream nextPutAll: ','; lf ]].
+		index < methods size ifTrue: [ aStream nextPutAll: ','; newLine ]].
 	aStream
 		tab: indent;
 		nextPutAll: ']'.
@@ -320,21 +333,21 @@ writeJsonOn: aStream  indent: startIndent
 		ifFalse: [ 
 			aStream
 				nextPutAll: ',';
-				lf;
+				newLine;
 				tab: indent;
 				nextPutAll: '"README.md" : ';
 				yourself.
 			self comment writeCypressJsonOn: aStream indent: indent ].
 	aStream
 		nextPutAll: ',';
-		lf;
+		newLine;
 		tab: indent;
 		nextPutAll: '"properties.json" : ';
 		yourself.
 	self properties writeCypressJsonOn: aStream indent: indent.
 	indent := indent - 1.
 	aStream
-		lf;
+		newLine;
 		tab: indent;
 		nextPutAll: ' }'
 ! !
@@ -392,8 +405,8 @@ parse	| result |	result := self whitespace; parseValue.	stream atEnd		ifFals
 !CypressJsonParser methodsFor: 'parsing' stamp: 'dkh 2/16/2012 14:39:25'!
 parseArray	| result |	self expect: '['.	result := self createArray.	(self match: ']')		ifTrue: [ ^ result ].	[ stream atEnd ] whileFalse: [		result := self			addValue: self parseValue			to: result.		(self match: ']') 			ifTrue: [ ^ result ].		self expect: ',' ].	self error: 'end of array expected'! !
 
-!CypressJsonParser methodsFor: 'parsing-internal' stamp: 'dkh 2/16/2012 14:39:25'!
-parseCharacter	| char |	(char := stream next) = $\ 		ifFalse: [ ^ char ].	(char := stream next) = $" 		ifTrue: [ ^ char ].	char = $\		ifTrue: [ ^ char ].	char = $/		ifTrue: [ ^ char ].	char = $b		ifTrue: [ ^ Character backspace ].	char = $f		ifTrue: [ ^ Character newPage ].	char = $n		ifTrue: [ ^ Character lf ].	char = $r		ifTrue: [ ^ Character cr ].	char = $t		ifTrue: [ ^ Character tab ].	char = $u		ifTrue: [ ^ self parseCharacterHex ].	self error: 'invalid escape character \' , (String with: char)! !
+!CypressJsonParser methodsFor: 'parsing-internal' stamp: 'dkh 4/23/2012 23:39'!
+parseCharacter	| char |	(char := stream next) = $\ 		ifFalse: [ ^ char ].	(char := stream next) = $" 		ifTrue: [ ^ char ].	char = $\		ifTrue: [ ^ char ].	char = $/		ifTrue: [ ^ char ].	char = $b		ifTrue: [ ^ Character backspace ].	char = $f		ifTrue: [ ^ Character newPage ].	char = $n		ifTrue: [ ^ Character lfCharacter ].	char = $r		ifTrue: [ ^ Character crCharacter ].	char = $t		ifTrue: [ ^ Character tab ].	char = $u		ifTrue: [ ^ self parseCharacterHex ].	self error: 'invalid escape character \' , (String with: char)! !
 
 !CypressJsonParser methodsFor: 'parsing-internal' stamp: 'dkh 2/16/2012 14:39:25'!
 parseCharacterHex	| value |	value := self parseCharacterHexDigit.	3 timesRepeat: [ value := (value << 4) + self parseCharacterHexDigit ].	^ Character codePoint: value! !
@@ -410,8 +423,8 @@ parseNumberExponent    | number negated |    number := 0.    negated := strea
 !CypressJsonParser methodsFor: 'parsing-internal' stamp: 'dkh 4/6/2012 15:56:14'!
 parseNumberFraction    | number power |    number := 0.    power := 1.0.    [ stream atEnd not and: [ stream peek isDigit ] ]        whileTrue: [             number := 10 * number + (stream next charCode - 48).            power := power * 10.0 ].    ^ number / power! !
 
-!CypressJsonParser methodsFor: 'parsing-internal' stamp: 'dkh 4/6/2012 15:56:14'!
-parseNumberInteger    | number |    number := 0.    [ stream atEnd not and: [ stream peek isDigit ] ] whileTrue: [ number := 10 * number + (stream next charCode - 48) ].    ^ number! !
+!CypressJsonParser methodsFor: 'parsing-internal' stamp: 'dkh 4/23/2012 23:35'!
+parseNumberInteger    | number |    number := 0.    [ stream atEnd not and: [ stream peek isDigit ] ] whileTrue: [ number := 10 * number + (stream next asciiValue - 48) ].    ^ number! !
 
 !CypressJsonParser methodsFor: 'parsing' stamp: 'dkh 2/16/2012 14:39:25'!
 parseObject	| result |	self expect: '{'.	result := self createObject.	(self match: '}')		ifTrue: [ ^ result ].	[ stream atEnd ] whileFalse: [		result := self			addProperty: self parseProperty			to: result.		(self match: '}')			ifTrue: [ ^ result ].		self expect: ',' ].	self error: 'end of object expected'! !
@@ -473,38 +486,37 @@ classStructure: aCypressClassStructure
 	classStructure := aCypressClassStructure
 ! !
 
-!CypressMethodStructure methodsFor: 'accessing' stamp: 'dkh 4/23/2012 20:24'!
+!CypressMethodStructure methodsFor: 'accessing' stamp: 'dkh 4/23/2012 23:37'!
 cypressSource
 
 	| stream |
 	stream := WriteStream on: String new.
 	stream 
 		nextPutAll: self category;
-		lf;
+		newLine;
 		nextPutAll: self source.
 	^stream contents
 ! !
 
-!CypressMethodStructure methodsFor: 'private' stamp: 'dkh 4/23/2012 20:25'!
+!CypressMethodStructure methodsFor: 'private' stamp: 'dkh 4/23/2012 23:28'!
 extractCypressSource: aString
-
-	| stream categoryStream sourceStream readingCategory |
-	stream := ReadStream on: aString.
-	stream reset.
-	categoryStream := WriteStream on: String new.
-	sourceStream := WriteStream on: String new.
-	readingCategory := true.
-	[ stream atEnd] whileFalse: [ | char |
-		char := stream next.
-		readingCategory
-			ifTrue: [
-				char = String lf
-					ifTrue: [ readingCategory := false ]
-					ifFalse: [ categoryStream nextPutAll: char ]]
-			ifFalse: [ sourceStream nextPutAll: char ]].
-	self category: categoryStream contents.
-	self source: sourceStream contents
-! !
+    | stream categoryStream sourceStream readingCategory |
+    stream := ReadStream on: aString.
+    categoryStream := WriteStream on: String new.
+    sourceStream := WriteStream on: String new.
+    readingCategory := true.
+    [ stream atEnd ]
+        whileFalse: [ 
+            | char |
+            char := stream next.
+            readingCategory
+                ifTrue: [ 
+                    char = Character lfCharacter
+                        ifTrue: [ readingCategory := false ]
+                        ifFalse: [ categoryStream nextPut: char ] ]
+                ifFalse: [ sourceStream nextPut: char ] ].
+    self category: categoryStream contents.
+    self source: sourceStream contents! !
 
 !CypressMethodStructure methodsFor: 'initialization'!
 fromJs: jsObject  named: methodNameParts
@@ -562,7 +574,7 @@ source: aString
 	source := aString
 ! !
 
-!CypressMethodStructure methodsFor: 'writing'!
+!CypressMethodStructure methodsFor: 'writing' stamp: 'dkh 4/23/2012 23:37'!
 writeJsonOn: aStream  indent: startIndent
 
 	| indent |
@@ -570,14 +582,14 @@ writeJsonOn: aStream  indent: startIndent
 	aStream 
 		tab: indent;
 		nextPutAll: '{';
-		lf.
+		newLine.
 	indent := indent + 1.
 	aStream
 		tab: indent;
 		nextPutAll: '"name"';
 		nextPutAll: ' : ';
 		nextPutAll: '"', self name, '.st",';
-		lf.
+		newLine.
 	aStream
 		tab: indent;
 		nextPutAll: '"contents"';
@@ -585,7 +597,7 @@ writeJsonOn: aStream  indent: startIndent
 	self cypressSource writeCypressJsonOn: aStream indent: indent.
 	indent := indent - 1.
 	aStream
-		lf;
+		newLine;
 		tab: indent;
 		nextPutAll: ' }'
 ! !
@@ -752,7 +764,7 @@ snapshot
 	^ CypressSnapshot definitions: definitions
 ! !
 
-!CypressPackageStructure methodsFor: 'writing'!
+!CypressPackageStructure methodsFor: 'writing' stamp: 'dkh 4/23/2012 23:39'!
 writeJsonOn: aStream  indent: startIndent
 
 	| indent |
@@ -760,7 +772,7 @@ writeJsonOn: aStream  indent: startIndent
 	aStream 
 		tab: indent;
 		nextPutAll: '{';
-		lf.
+		newLine.
 	indent := indent + 1.
 	aStream
 		tab: indent;
@@ -768,38 +780,38 @@ writeJsonOn: aStream  indent: startIndent
 		nextPutAll: ' : ';
 		nextPutAll: '"', self name, '",'.
 	aStream
-		lf;
+		newLine;
 		tab: indent;
 		nextPutAll: '"contents" : [';
-		lf;
+		newLine;
 		yourself.
 	1 to: self classes size do: [:index | | classStructure | 
 		classStructure := self classes at: index.
 		classStructure writeJsonOn: aStream indent: indent + 1.
-		(self extensions size > 0 or: [ index < self classes size]) ifTrue: [ aStream nextPutAll: ','; lf. ]].
+		(self extensions size > 0 or: [ index < self classes size]) ifTrue: [ aStream nextPutAll: ','; newLine. ]].
 	1 to: self extensions size do: [:index | | classStructure | 
 		classStructure := self extensions at: index.
 		classStructure writeJsonOn: aStream indent: indent + 1.
-		index < self extensions size ifTrue: [ aStream nextPutAll: ','; lf.] ].
+		index < self extensions size ifTrue: [ aStream nextPutAll: ','; newLine.] ].
 	aStream
-		lf;
+		newLine;
 		tab: indent;
 		nextPutAll: '],';
-		lf;
+		newLine;
 		tab: indent;
 		nextPutAll: '"properties.json" : '.
 	self properties writeCypressJsonOn: aStream indent: indent.
 	indent := indent - 1.
 	aStream 
-		lf;
+		newLine;
 		tab: indent;
 		nextPutAll: '}'
 ! !
 
-!CypressPackageStructure class methodsFor: 'instance creation'!
+!CypressPackageStructure class methodsFor: 'instance creation' stamp: 'dkh 4/23/2012 23:33'!
 fromJson: aJsonString
 
-	^self fromJs: (Compiler new eval: '(', aJsonString , ')')
+	^self fromJs: (CypressJsonParser parse: aJsonString)
 ! !
 
 !CypressPackageStructure class methodsFor: 'instance creation'!
@@ -852,8 +864,8 @@ writeExtensionClassStructure: classStructure to: classPath     self        wr
 !CypressPackageWriter methodsFor: 'private' stamp: 'dkh 4/22/2012 13:24:15'!
 writeInDirectoryName: directoryNameOrPath fileName: fileName extension: ext visit: visitBlock    | directory |    directory := self directoryForDirectoryNamed: directoryNameOrPath.    directory        forceNewFileNamed: fileName , ext        do: [ :file |             file lineEndConvention: #'lf'.            visitBlock value: file ]! !
 
-!CypressPackageWriter methodsFor: 'writing' stamp: 'dkh 4/22/2012 13:24:15'!
-writeMethodStructure: methodStructure to:methodPath    | filename |    filename := self fileNameForSelector: methodStructure selector.    self        writeInDirectoryName: methodPath        fileName: filename        extension: '.st'        visit: [:fileStream |		fileStream        		nextPutAll: methodStructure category;        		lf;        		nextPutAll: methodStructure source withUnixLineEndings ]! !
+!CypressPackageWriter methodsFor: 'writing' stamp: 'dkh 4/23/2012 23:38'!
+writeMethodStructure: methodStructure to:methodPath    | filename |    filename := self fileNameForSelector: methodStructure selector.    self        writeInDirectoryName: methodPath        fileName: filename        extension: '.st'        visit: [:fileStream |		fileStream        		nextPutAll: methodStructure category;        		newLine;        		nextPutAll: methodStructure source withUnixLineEndings ]! !
 
 !CypressPackageWriter methodsFor: 'writing' stamp: 'dkh 4/22/2012 13:24:15'!
 writePackageStructure	self writePackageStructureClasses:  self packageStructure classes isClassExtension: false.	self writePackageStructureClasses:  self packageStructure extensions isClassExtension: true! !
@@ -983,25 +995,36 @@ fromJs: jsObject
 		yourself
 ! !
 
-!Dictionary methodsFor: '*Cypress-Structure'!
-writeCypressJsonOn: aStream  indent: startIndent
-	| indent count |
-	indent := startIndent.
-	aStream 
-		nextPutAll: '{';
-		lf.
-	count := 0.
-	indent := indent + 1.
-	self keysAndValuesDo: [:key :value |
-		count := count+ 1.
-		aStream tab: indent.
-		key writeCypressJsonOn: aStream indent: indent.
-		aStream nextPutAll: ' : '.
-		value writeCypressJsonOn: aStream indent: indent.
-		count < self size ifTrue: [ aStream nextPutAll: ','; lf ] ].
-	self size = 0 ifTrue: [ aStream tab: indent ].
-	aStream nextPutAll: ' }'
-! !
+!Dictionary methodsFor: '*Cypress-Structure' stamp: 'dkh 4/23/2012 23:54'!
+asCypressPropertyObject
+    self associations do: [ :assoc | self at: assoc key put: assoc value asCypressPropertyObject ]! !
+
+!Dictionary methodsFor: '*Cypress-Structure' stamp: 'dkh 4/23/2012 23:54'!
+writeCypressJsonOn: aStream indent: startIndent
+    | indent count |
+    indent := startIndent.
+    aStream
+        nextPutAll: '{';
+        newLine.
+    count := 0.
+    indent := indent + 1.
+    (self keys sort: [ :a :b | a <= b ])
+        do: [ :key | 
+            | value |
+            value := self at: key.
+            count := count + 1.
+            aStream tab: indent.
+            key writeCypressJsonOn: aStream indent: indent.
+            aStream nextPutAll: ' : '.
+            value writeCypressJsonOn: aStream indent: indent.
+            count < self size
+                ifTrue: [ 
+                    aStream
+                        nextPutAll: ',';
+                        newLine ] ].
+    self size = 0
+        ifTrue: [ aStream tab: indent ].
+    aStream nextPutAll: ' }'! !
 
 !Number methodsFor: '*Cypress-Structure'!
 writeCypressJsonOn: aStream  indent: startIndent
@@ -1016,17 +1039,33 @@ asCypressPropertyObject
 	^self
 ! !
 
-!String methodsFor: '*Cypress-Structure'!
+!String methodsFor: '*Cypress-Structure' stamp: 'dkh 4/23/2012 23:49'!
 asCypressPropertyObject
 
-	^self unescaped
+	^self unescapePercents withLineEndings: String lfString
 ! !
 
-!String methodsFor: '*Cypress-Structure'!
+!String methodsFor: '*Cypress-Structure' stamp: 'dkh 4/23/2012 23:47'!
+encodeForHTTP
+	"change dangerous characters to their %XX form, for use in HTTP transactions"
+	| encodedStream |
+	encodedStream _ WriteStream on: (String new).
+	
+	1 to: self size do: [ :n | | c |
+		c := self at: n.
+		c isSafeForHTTP ifTrue: [ encodedStream nextPut: c ] ifFalse: [
+			encodedStream nextPut: $%.
+			encodedStream nextPut: (c asciiValue // 16) asHexDigit.
+			encodedStream nextPut: (c asciiValue \\ 16) asHexDigit.
+		]
+	].
+	^encodedStream contents.! !
+
+!String methodsFor: '*Cypress-Structure' stamp: 'dkh 4/23/2012 23:48'!
 writeCypressJsonOn: aStream  indent: startIndent
 
 	aStream 
 		nextPutAll: '"';
-		nextPutAll: self escaped;
+		nextPutAll: (self withLineEndings: String lfString) encodeForHTTP;
 		nextPutAll: '"'
 ! !

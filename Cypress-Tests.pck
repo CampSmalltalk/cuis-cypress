@@ -1,4 +1,4 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 23 April 2012 at 9:34:04 pm'!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 12:04:46 am'!
 'Description Please enter a description for this package '!
 !classDefinition: #CypressAbstractTest category: #'Cypress-Tests'!
 TestCase subclass: #CypressAbstractTest
@@ -281,20 +281,20 @@ compileJSON: aJsonString
 
 	^CypressJsonParser parse: aJsonString! !
 
-!CypressAbstractTest methodsFor: 'private'!
+!CypressAbstractTest methodsFor: 'private' stamp: 'dkh 4/24/2012 00:04'!
 sampleJson
 
 	^'{
-	"name" : "John%20Smith",
 	"age" : 25,
-	"registered" : true,
+	"name" : "John%20Smith",
 	"phoneNumber" : [
 		{
-			"type" : "home",
-			"number" : "212%20555-1234" },
+			"number" : "212%20555-1234",
+			"type" : "home" },
 		{
-			"type" : "fax",
-			"number" : "646%20555-4567" } ] }'
+			"number" : "646%20555-4567",
+			"type" : "fax" } ],
+	"registered" : true }'
 ! !
 
 !CypressAbstractTest methodsFor: 'private'!
@@ -639,12 +639,12 @@ testPropertyDictionaryRead
 	self assert: ((phoneNumbers at: 2) at: 'number') = '646 555-4567'.
 ! !
 
-!CypressStructureTest methodsFor: 'tests' stamp: 'dkh 4/23/2012 20:25'!
+!CypressStructureTest methodsFor: 'tests' stamp: 'dkh 4/23/2012 23:59'!
 testPropertyDictionaryWrite
 
-	| propertyDictionary stream |
+	| propertyDictionary stream x y |
 	propertyDictionary := (self compileJSON: self sampleJson) asCypressPropertyObject.
 	stream := WriteStream on: String new.
 	propertyDictionary writeCypressJsonOn: stream indent: 0.
-	self assert: stream contents = self sampleJson
+	self assert: (x:= stream contents withLineEndings: String lfString)  = (y := self sampleJson withLineEndings: String lfString)
 ! !
