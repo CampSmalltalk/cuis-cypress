@@ -600,12 +600,12 @@ testPackageStructureSnapshot
 	self validatePackage: packageStructure against: self baseDefinitions
 ! !
 
-!CypressStructureTest methodsFor: 'tests'!
+!CypressStructureTest methodsFor: 'tests' stamp: 'dkh 4/23/2012 20:25'!
 testPackageStructureToJson
 
 	| packageStructure stream json |
 	packageStructure := CypressPackageStructure fromPackage: (CypressPackageDefinition new name: 'Cypress-Mocks').
-	stream := StringStream on: String new.
+	stream := WriteStream on: String new.
 	packageStructure writeJsonOn: stream.
 	json := stream contents.
 	self assert: self basePackageStructureJson = json
@@ -625,12 +625,12 @@ testPropertyDictionaryRead
 	self assert: ((phoneNumbers at: 2) at: 'number') = '646 555-4567'.
 ! !
 
-!CypressStructureTest methodsFor: 'tests'!
+!CypressStructureTest methodsFor: 'tests' stamp: 'dkh 4/23/2012 20:25'!
 testPropertyDictionaryWrite
 
 	| propertyDictionary stream |
 	propertyDictionary := (self compileJSON: self sampleJson) asCypressPropertyObject.
-	stream := StringStream on: String new.
+	stream := WriteStream on: String new.
 	propertyDictionary writeCypressJsonOn: stream indent: 0.
 	self assert: stream contents = self sampleJson
 ! !

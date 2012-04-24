@@ -666,11 +666,11 @@ classStructure: aCypressClassStructure
 	classStructure := aCypressClassStructure
 ! !
 
-!CypressMethodStructure methodsFor: 'accessing'!
+!CypressMethodStructure methodsFor: 'accessing' stamp: 'dkh 4/23/2012 20:24'!
 cypressSource
 
 	| stream |
-	stream := StringStream on: String new.
+	stream := WriteStream on: String new.
 	stream 
 		nextPutAll: self category;
 		lf;
@@ -748,14 +748,14 @@ fromMethodDefinition: methodDefinition
 ! !
 
 
-!CypressMethodStructure methodsFor: 'private'!
+!CypressMethodStructure methodsFor: 'private' stamp: 'dkh 4/23/2012 20:25'!
 extractCypressSource: aString
 
 	| stream categoryStream sourceStream readingCategory |
-	stream := StringStream on: aString.
+	stream := ReadStream on: aString.
 	stream reset.
-	categoryStream := StringStream on: String new.
-	sourceStream := StringStream on: String new.
+	categoryStream := WriteStream on: String new.
+	sourceStream := WriteStream on: String new.
 	readingCategory := true.
 	[ stream atEnd] whileFalse: [ | char |
 		char := stream next.

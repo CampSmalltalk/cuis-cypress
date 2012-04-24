@@ -218,11 +218,11 @@ unloadDefinition
 ! !
 
 
-!CypressClassDefinition methodsFor: 'printString'!
+!CypressClassDefinition methodsFor: 'printString' stamp: 'dkh 4/23/2012 20:24'!
 printString
 
 	| str |
-	str := StringStream on: String new.
+	str := WriteStream on: String new.
 	str 
 		nextPutAll: super printString;
 		nextPutAll: ' (';
@@ -538,9 +538,9 @@ analyzeRemovals
 	removals := sorter orderedItems reversed.
 ! !
 
-!CypressLoader methodsFor: 'loading'!
+!CypressLoader methodsFor: 'loading' stamp: 'dkh 4/23/2012 20:26'!
 basicLoad
-	errorDefinitions := OrderedCollection new.
+	errors := OrderedCollection new.
 	self additions do: [:ea | self loadClassDefinition: ea ]. "load class definitions first"
 	self additions do: [:ea | self loadMethodDefinition: ea ] . "load method definitions now"
 	self removals do: [:ea | self unloadDefinition: ea ]. "now we can remove things"
@@ -731,11 +731,11 @@ unloadDefinition
 ! !
 
 
-!CypressMethodDefinition methodsFor: 'printing'!
+!CypressMethodDefinition methodsFor: 'printing' stamp: 'dkh 4/23/2012 20:24'!
 printString
 
 	| str |
-	str := StringStream on: String new.
+	str := WriteStream on: String new.
 	str 
 		nextPutAll: super printString;
 		nextPutAll: ' (';
@@ -1040,11 +1040,11 @@ postLoadDefinition
 ! !
 
 
-!CypressAddition methodsFor: 'printing'!
+!CypressAddition methodsFor: 'printing' stamp: 'dkh 4/23/2012 20:24'!
 printString
 
 	| str |
-	str := StringStream on: String new.
+	str := WriteStream on: String new.
 	str 
 		nextPutAll: super printString;
 		nextPutAll: ' (';
@@ -1143,11 +1143,11 @@ postLoadDefinition
 ! !
 
 
-!CypressModification methodsFor: 'printing'!
+!CypressModification methodsFor: 'printing' stamp: 'dkh 4/23/2012 20:25'!
 printString
 
 	| str |
-	str := StringStream on: String new.
+	str := WriteStream on: String new.
 	str 
 		nextPutAll: super printString;
 		nextPutAll: ' (';
@@ -1248,11 +1248,11 @@ unloadDefinition
 ! !
 
 
-!CypressRemoval methodsFor: 'printing'!
+!CypressRemoval methodsFor: 'printing' stamp: 'dkh 4/23/2012 20:25'!
 printString
 
 	| str |
-	str := StringStream on: String new.
+	str := WriteStream on: String new.
 	str 
 		nextPutAll: super printString;
 		nextPutAll: ' (';
