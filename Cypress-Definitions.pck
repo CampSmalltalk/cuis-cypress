@@ -1,4 +1,4 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 12:36:04 am'!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 3:30:21 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #CypressDefinition category: #'Cypress-Definitions'!
 Object subclass: #CypressDefinition
@@ -692,7 +692,7 @@ errors
 	^errors
 ! !
 
-!CypressLoader methodsFor: 'error handling'!
+!CypressLoader methodsFor: 'error handling' stamp: 'dkh 4/24/2012 15:30'!
 handleErrorFor: aPatchOperation during: aBlock
 	aBlock on: Error do: [:ex | self errors add: aPatchOperation ].
 ! !
@@ -862,12 +862,12 @@ isInitializer
 	^ self selector = 'initialize' and: [self classIsMeta]
 ! !
 
-!CypressMethodDefinition methodsFor: 'loading'!
+!CypressMethodDefinition methodsFor: 'loading' stamp: 'dkh 4/24/2012 15:27'!
 loadMethodDefinition
 
 	self actualClass
 		compile: self source
-		category: self category
+		classified: self category
 ! !
 
 !CypressMethodDefinition methodsFor: 'loading'!
@@ -916,17 +916,15 @@ source
 	^source
 ! !
 
-!CypressMethodDefinition methodsFor: 'loading'!
+!CypressMethodDefinition methodsFor: 'loading' stamp: 'dkh 4/24/2012 15:26'!
 theNonMetaClass
-	^Smalltalk current at: self className
+	^Smalltalk at: self className
 ! !
 
-!CypressMethodDefinition methodsFor: 'loading'!
+!CypressMethodDefinition methodsFor: 'loading' stamp: 'dkh 4/24/2012 15:28'!
 unloadDefinition
 
-	| cls |
-	cls := self actualClass.
-	cls removeCompiledMethod: (cls methodAt: self selector)
+	self actualClass removeSelector: self selector asSymbol
 ! !
 
 !CypressMethodDefinition class methodsFor: 'instance creation'!

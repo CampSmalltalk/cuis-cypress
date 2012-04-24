@@ -1,4 +1,4 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 1:05:22 am'!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 3:27:33 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #CypressAbstractTest category: #'Cypress-Tests'!
 TestCase subclass: #CypressAbstractTest

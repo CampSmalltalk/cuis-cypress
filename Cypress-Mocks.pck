@@ -1,4 +1,4 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 1:05:15 am'!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 3:29:19 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #CypressMockBasic category: #'Cypress-Mocks'!
 Object subclass: #CypressMockBasic
@@ -14,7 +14,7 @@ CypressMockBasic class
 !CypressMockBasic commentStamp: 'dkh 4/24/2012 01:05' prior: 0!
 This mock contains basic class and instance method selectors!
 
-!CypressMockBasic methodsFor: 'accessing' stamp: 'dkh 4/24/2012 00:22'!
+!CypressMockBasic methodsFor: 'accessing' stamp: 'dkh 4/24/2012 15:29'!
 extra
 	"extra method"! !
 
@@ -27,7 +27,7 @@ initialize
 name
 	^name! !
 
-!CypressMockBasic methodsFor: 'accessing' stamp: 'dkh 4/24/2012 00:23'!
+!CypressMockBasic methodsFor: 'accessing' stamp: 'dkh 4/24/2012 15:29'!
 name: aString
 	name := aString! !
 
@@ -43,7 +43,7 @@ current: anObject
 initialize
 	self current: self new! !
 
-!Object methodsFor: '*Cypress-Mocks' stamp: 'dkh 4/24/2012 00:35'!
+!Object methodsFor: '*Cypress-Mocks' stamp: 'dkh 4/24/2012 15:29'!
 isCypressMockBasic
 	^false! !
 CypressMockBasic initialize!
