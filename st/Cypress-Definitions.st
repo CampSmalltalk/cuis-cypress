@@ -1210,7 +1210,7 @@ intersection: aCollection
 	^ self select: [:each | aCollection includes: each]
 ! !
 
-!CharacterArray methodsFor: '*Cypress-Definitions'!
+!String methodsFor: '*Cypress-Definitions'!
 
 sameAs: aString
 

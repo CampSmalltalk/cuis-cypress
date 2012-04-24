@@ -518,7 +518,7 @@ fromJs: jsObject
 
 fromPackage: aCypressPackageDefinition
 
-	| snapshot classMap classDefinitions |
+	| snapshot classMap classDefinitions classStructure |
 	snapshot := aCypressPackageDefinition snapshot.
 	name := aCypressPackageDefinition name, '.package'.
 	properties := Dictionary new.
@@ -532,7 +532,7 @@ fromPackage: aCypressPackageDefinition
 						at: methodDefinition className 
 						ifAbsent: [classMap at: methodDefinition className put: Set new]) 
 							add: methodDefinition. ]].
-	classDefinitions do: [:classDefinition | | classStructure |
+	classDefinitions do: [:classDefinition |
 		classStructure := (CypressClassStructure fromClassDefinition: classDefinition)
 			packageStructure: self.
 		(classMap removeKey: classDefinition className ifAbsent: [#()]) do: [:methodDefinition | | methodStructure |
@@ -681,34 +681,13 @@ asCypressPropertyObject
 	^self collect: [:each | each asCypressPropertyObject ]
 !
 
-writeCypressJsonOn: aStream  indent: indent
+writeCypressJsonOn: aStream  indent: startIndent
 
+	| indent |
 	aStream 
 		nextPutAll: '[';
 		lf.
-	indent := indent + 1.
-	1 to: self size do: [:index | | item | 
-		item := self at: index.
-		aStream tab: indent.
-		item writeCypressJsonOn: aStream  indent: indent.
-		index < self size ifTrue: [ aStream nextPutAll: ','; lf ]].
-	self size = 0 ifTrue: [ aStream tab: indent ].
-	aStream nextPutAll: ' ]'
-! !
-
-!Array methodsFor: '*Cypress-Structure'!
-
-asCypressPropertyObject
-
-	^self collect: [:each | each asCypressPropertyObject ]
-!
-
-writeCypressJsonOn: aStream  indent: indent
-
-	aStream 
-		nextPutAll: '[';
-		lf.
-	indent := indent + 1.
+	indent := startIndent + 1.
 	1 to: self size do: [:index | | item | 
 		item := self at: index.
 		aStream tab: indent.
@@ -733,20 +712,6 @@ writeCypressJsonOn: aStream  indent: startIndent
 		nextPutAll: '"'
 ! !
 
-!JSObjectProxy methodsFor: '*Cypress-Structure'!
-
-asCypressPropertyObject
-	| properties |
-	properties := Dictionary new.
-	<for(var i in self['@jsObject']) {
-		properties._at_put_(i, self['@jsObject'][i]);
-	}>.
-	properties associations do: [:assoc |
-		properties 
-			at: assoc key 
-			put: assoc value asCypressPropertyObject ].
-	^properties
-! !
 
 !Number methodsFor: '*Cypress-Structure'!
 
@@ -755,14 +720,3 @@ writeCypressJsonOn: aStream  indent: startIndent
 	aStream 
 		nextPutAll: self printString
 ! !
-
-!StringStream methodsFor: '*Cypress-Structure'!
-
-tab
-	self nextPut: '	'
-!
-
-tab: count
-	count timesRepeat: [ self tab ]
-! !
-
