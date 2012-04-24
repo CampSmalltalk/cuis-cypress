@@ -1,7 +1,6 @@
-Smalltalk current createPackage: 'Cypress-Structure' properties: #{}!
 Object subclass: #CypressStructure
 	instanceVariableNames: 'name properties packageStructure'
-	package: 'Cypress-Structure'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Structure'!
 
 !CypressStructure methodsFor: 'accessing'!
 
@@ -68,7 +67,7 @@ fromJs: jsObject
 
 CypressStructure subclass: #CypressClassStructure
 	instanceVariableNames: 'instanceMethods classMethods comment isClassExtension'
-	package: 'Cypress-Structure'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Structure'!
 
 !CypressClassStructure methodsFor: 'accessing'!
 
@@ -308,7 +307,7 @@ fromClassDefinition: classDefinition
 
 CypressStructure subclass: #CypressMethodStructure
 	instanceVariableNames: 'source isMetaclass classStructure'
-	package: 'Cypress-Structure'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Structure'!
 
 !CypressMethodStructure methodsFor: 'accessing'!
 
@@ -465,7 +464,7 @@ fromMethodDefinition: methodDefinition
 
 CypressStructure subclass: #CypressPackageStructure
 	instanceVariableNames: 'classes extensions'
-	package: 'Cypress-Structure'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Structure'!
 
 !CypressPackageStructure methodsFor: 'accessing'!
 

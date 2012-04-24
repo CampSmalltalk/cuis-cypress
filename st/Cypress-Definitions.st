@@ -1,7 +1,6 @@
-Smalltalk current createPackage: 'Cypress-Definitions' properties: #{}!
 Object subclass: #CypressDefinition
 	instanceVariableNames: ''
-	package: 'Cypress-Definitions'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Definitions'!
 
 !CypressDefinition methodsFor: 'accessing'!
 
@@ -76,7 +75,7 @@ classDefinition: classBlock methodDefinition: methodBlock
 
 CypressDefinition subclass: #CypressClassDefinition
 	instanceVariableNames: 'name superclassName category comment instVarNames classInstVarNames'
-	package: 'Cypress-Definitions'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Definitions'!
 
 !CypressClassDefinition methodsFor: 'accessing'!
 
@@ -179,7 +178,7 @@ createClass
 		superclass: superClass 
 		subclass: self name
 		instanceVariableNames: (self stringForVariables: self instVarNames)
-		package: self category
+		classVariableNames: '' poolDictionaries: '' category: self category
 !
 
 loadClassDefinition
@@ -244,7 +243,7 @@ comment: aComment
 
 CypressDefinition subclass: #CypressMethodDefinition
 	instanceVariableNames: 'classIsMeta source category selector className'
-	package: 'Cypress-Definitions'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Definitions'!
 
 !CypressMethodDefinition methodsFor: 'accessing'!
 
@@ -408,7 +407,7 @@ source: aSource
 
 Object subclass: #CypressDefinitionIndex
 	instanceVariableNames: 'definitionMap'
-	package: 'Cypress-Definitions'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Definitions'!
 
 !CypressDefinitionIndex methodsFor: 'accessing'!
 
@@ -455,7 +454,7 @@ definitions: aCollection
 
 Object subclass: #CypressDependencySorter
 	instanceVariableNames: 'required provided orderedItems'
-	package: 'Cypress-Definitions'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Definitions'!
 
 !CypressDependencySorter methodsFor: 'accessing'!
 
@@ -549,7 +548,7 @@ unresolvedRequirementsFor: aPatchOperation
 
 Object subclass: #CypressLoader
 	instanceVariableNames: 'additions removals unloadable provisions errors methodAdditions requirements'
-	package: 'Cypress-Definitions'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Definitions'!
 
 !CypressLoader methodsFor: 'accessing'!
 
@@ -700,7 +699,7 @@ updatePackage: aPackage withSnapshot: aSnapshot
 
 Object subclass: #CypressPackageDefinition
 	instanceVariableNames: 'name'
-	package: 'Cypress-Definitions'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Definitions'!
 
 !CypressPackageDefinition methodsFor: 'accessing'!
 
@@ -751,7 +750,7 @@ snapshot
 
 Object subclass: #CypressPatch
 	instanceVariableNames: 'operations'
-	package: 'Cypress-Definitions'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Definitions'!
 
 !CypressPatch methodsFor: 'accessing'!
 
@@ -799,7 +798,7 @@ fromBase: baseSnapshot toTarget: targetSnapshot
 
 Object subclass: #CypressPatchOperation
 	instanceVariableNames: ''
-	package: 'Cypress-Definitions'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Definitions'!
 
 !CypressPatchOperation methodsFor: 'accessing'!
 
@@ -857,7 +856,7 @@ unloadDefinition
 
 CypressPatchOperation subclass: #CypressAddition
 	instanceVariableNames: 'definition'
-	package: 'Cypress-Definitions'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Definitions'!
 
 !CypressAddition methodsFor: 'accessing'!
 
@@ -942,7 +941,7 @@ of: aDefinition
 
 CypressPatchOperation subclass: #CypressModification
 	instanceVariableNames: 'obsoletion modification'
-	package: 'Cypress-Definitions'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Definitions'!
 
 !CypressModification methodsFor: 'accessing'!
 
@@ -1031,7 +1030,7 @@ of: base to: target
 
 CypressPatchOperation subclass: #CypressRemoval
 	instanceVariableNames: 'definition'
-	package: 'Cypress-Definitions'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Definitions'!
 
 !CypressRemoval methodsFor: 'accessing'!
 
@@ -1123,7 +1122,7 @@ of: aDefinition
 
 Object subclass: #CypressSnapshot
 	instanceVariableNames: 'definitions'
-	package: 'Cypress-Definitions'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Definitions'!
 
 !CypressSnapshot methodsFor: 'accessing'!
 

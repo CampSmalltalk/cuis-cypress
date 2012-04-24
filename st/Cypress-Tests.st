@@ -1,7 +1,6 @@
-Smalltalk current createPackage: 'Cypress-Tests' properties: #{}!
 TestCase subclass: #CypressAbstractTest
 	instanceVariableNames: ''
-	package: 'Cypress-Tests'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Tests'!
 
 !CypressAbstractTest methodsFor: 'private'!
 
@@ -317,7 +316,7 @@ validatePackage: package against: expectedDefinitions
 
 CypressAbstractTest subclass: #CypressDefinitionTest
 	instanceVariableNames: ''
-	package: 'Cypress-Tests'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Tests'!
 
 !CypressDefinitionTest methodsFor: 'testing'!
 
@@ -386,7 +385,7 @@ testPrintString
 
 CypressAbstractTest subclass: #CypressImportExportTest
 	instanceVariableNames: ''
-	package: 'Cypress-Tests'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Tests'!
 
 !CypressImportExportTest methodsFor: 'running'!
 
@@ -493,7 +492,7 @@ testPharoJsonx
 
 CypressAbstractTest subclass: #CypressLoaderTest
 	instanceVariableNames: ''
-	package: 'Cypress-Tests'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Tests'!
 
 !CypressLoaderTest methodsFor: 'running'!
 
@@ -518,7 +517,7 @@ testLoad
 
 CypressAbstractTest subclass: #CypressPatchTest
 	instanceVariableNames: ''
-	package: 'Cypress-Tests'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Tests'!
 
 !CypressPatchTest methodsFor: 'testing'!
 
@@ -587,7 +586,7 @@ testPatchOperationEquality
 
 CypressAbstractTest subclass: #CypressSnapshotTest
 	instanceVariableNames: ''
-	package: 'Cypress-Tests'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Tests'!
 
 !CypressSnapshotTest methodsFor: 'testing'!
 
@@ -609,7 +608,7 @@ testSnapshotEquality
 
 CypressAbstractTest subclass: #CypressStructureTest
 	instanceVariableNames: ''
-	package: 'Cypress-Tests'!
+	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Tests'!
 
 !CypressStructureTest methodsFor: 'tests'!
 

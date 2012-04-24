@@ -1,7 +1,6 @@
-Smalltalk current createPackage: 'Cypress-Mocks' properties: #{}!
 Object subclass: #CypressMockBasic
 	instanceVariableNames: 'name'
-	package: 'Cypress-Mocks'!
+classVariableNames: '' poolDictionaries: '' category: 'Cypress-Mocks'!
 !CypressMockBasic commentStamp!
 ## Class Comment
 
