@@ -1,9 +1,11 @@
+!classDefinition: #CypressAbstractTest category: #'Cypress-Tests'!
 TestCase subclass: #CypressAbstractTest
 	instanceVariableNames: ''
-	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Tests'!
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Cypress-Tests'!
 
 !CypressAbstractTest methodsFor: 'private'!
-
 baseDefinitions
 	| className |
 	className := 'CypressMockBasic'.
@@ -73,8 +75,9 @@ baseDefinitions
         		source:'isCypressMockBasic
 	^false')
 	}
-!
+! !
 
+!CypressAbstractTest methodsFor: 'private'!
 basePackageStructureJson
 
 	^'{
@@ -137,8 +140,9 @@ basePackageStructureJson
 	"properties.json" : {
 		 }
 }'
-!
+! !
 
+!CypressAbstractTest methodsFor: 'private'!
 baseTargetPatch
 	| className |
 	className := 'CypressMockBasic'.
@@ -184,8 +188,9 @@ baseTargetPatch
         			source:'isCypressMockBasic
 	^false'))
 	}
-!
+! !
 
+!CypressAbstractTest methodsFor: 'private'!
 classComment
 
 	^'## Class Comment
@@ -213,13 +218,15 @@ And some [UTF8 samples][2]:
 
 [1]: http://github.github.com/github-flavored-markdown/
 [2]: http://www.columbia.edu/~fdc/utf8/'
-!
+! !
 
+!CypressAbstractTest methodsFor: 'private'!
 compileJSON: aJsonString
 
 	^(Compiler new eval: '(', aJsonString , ')')
-!
+! !
 
+!CypressAbstractTest methodsFor: 'private'!
 sampleJson
 
 	^'{
@@ -233,8 +240,9 @@ sampleJson
 		{
 			"type" : "fax",
 			"number" : "646%20555-4567" } ] }'
-!
+! !
 
+!CypressAbstractTest methodsFor: 'private'!
 targetDefinitions
 	"remove #extra method and modify #name: method"
 
@@ -300,8 +308,9 @@ targetDefinitions
         		source:'initialize
 	self current: self new')
 	}
-!
+! !
 
+!CypressAbstractTest methodsFor: 'private'!
 validatePackage: package against: expectedDefinitions
 
 	| packageDefinitions |
@@ -314,12 +323,15 @@ validatePackage: package against: expectedDefinitions
 				self assert: false ]].
 ! !
 
+
+!classDefinition: #CypressDefinitionTest category: #'Cypress-Tests'!
 CypressAbstractTest subclass: #CypressDefinitionTest
 	instanceVariableNames: ''
-	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Tests'!
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Cypress-Tests'!
 
 !CypressDefinitionTest methodsFor: 'testing'!
-
 testClassDefinition
 	self assert: (CypressClassDefinition
 		name: 'Foo'
@@ -328,8 +340,9 @@ testClassDefinition
                 instVarNames: #()
 		classInstVarNames: #()
         	comment: '') printString =  'a CypressClassDefinition (Foo)'
-!
+! !
 
+!CypressDefinitionTest methodsFor: 'testing'!
 testDictionaryOfDefinitions
 
 	| dict |
@@ -346,8 +359,9 @@ testDictionaryOfDefinitions
 		dict at: each put: each ].
 	self targetDefinitions do: [:each | 
 		self assert: (dict at: each) = each ].
-!
+! !
 
+!CypressDefinitionTest methodsFor: 'testing'!
 testEquality
 	| pkg1 pkg2 pkg3 name |
 	name := 'Cypress-Mocks'.
@@ -357,8 +371,9 @@ testEquality
 
 	self assert: pkg1 equals: pkg2.
 	self deny: pkg1 = pkg3
-!
+! !
 
+!CypressDefinitionTest methodsFor: 'testing'!
 testMethodDefinition
 	self assert: (CypressMethodDefinition
 		className: 'Foo'
@@ -366,16 +381,18 @@ testMethodDefinition
 		selector: 'isFoo'
 		category: 'testing'
 		source: 'isFoo ^true') printString = 'a CypressMethodDefinition (Foo>>isFoo)'
-!
+! !
 
+!CypressDefinitionTest methodsFor: 'testing'!
 testNameEquality
 	| pkg name |
 	name := 'Cypress-Mocks'.
 	pkg := CypressPackageDefinition new name: name.
 	self assert: pkg name equals: name.
 	self deny: (pkg name = 'Nope.').
-!
+! !
 
+!CypressDefinitionTest methodsFor: 'testing'!
 testPrintString
 	| name pkg |
 	name := 'Cypress-Mocks'.
@@ -383,119 +400,15 @@ testPrintString
 	self assert: 'a CypressPackageDefinition(', name, ')' equals: pkg printString.
 ! !
 
-CypressAbstractTest subclass: #CypressImportExportTest
-	instanceVariableNames: ''
-	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Tests'!
-
-!CypressImportExportTest methodsFor: 'running'!
-
-tearDown
-
-	| name |
-	super tearDown.
-	name := 'Cypress-Mocks'.
-	(CypressSnapshot definitions: self baseDefinitions)
-		 updatePackage: (CypressPackageDefinition new name: name)
-! !
-
-!CypressImportExportTest methodsFor: 'tests'!
-
-testExport
-	| testPrefix exporter |
-	testPrefix := (AmberProjectExporter exporterForPackage: 'Cypress-Tests') prefix.
-	exporter := (CypressAmberExporter new)
-		packageName: 'Cypress-Mocks';
-		prefix: testPrefix, 'tests/scratch/'.
-	exporter export.
-!
-
-testImport
-	| testPrefix |
-	testPrefix := (AmberProjectExporter exporterForPackage: 'Cypress-Tests') prefix.
-	CypressAmberImporter
-		importCypressPackages: #('Cypress-Mocks')  
-		prefix: testPrefix, 'tests/packages/'
-!
-
-testPharoJson
-
-	self compileJSON: '{
-	"name" : "Cypress-Mocks.package",
-	"contents" : [
-		{
-			"name" : "CypressMockBasic.class",
-			"instance" : [
-				{
-					"name" : "extra.st",
-					"contents" : "accessing%0Aextra%0A%09%22extra%20method%22"
-				 },
-				{
-					"name" : "initialize.st",
-					"contents" : "initialization%0Ainitialize%0A%09super%20initialize.%0A%09self%20name%3A%20%27Unknown%27"
-				 },
-				{
-					"name" : "name.st",
-					"contents" : "accessing%0Aname%0A%09%5Ename"
-				 },
-				{
-					"name" : "name..st",
-					"contents" : "accessing%0Aname%3A%20aString%0A%09name%20%3A%3D%20aString"
-				 }			],
-			"class" : [
-				{
-					"name" : "current.st",
-					"contents" : "accessing%0Acurrent%0A%09%5Ecurrent"
-				 },
-				{
-					"name" : "current..st",
-					"contents" : "accessing%0Acurrent%3A%20anObject%0A%09current%20%3A%3D%20anObject"
-				 },
-				{
-					"name" : "initialize.MCFileTreeJsonParserst",
-					"contents" : "initialization%0Ainitialize%0A%09self%20current%3A%20self%20new"
-				 }			],
-			"README.md" : "This%20mock%20contains%20basic%20class%20and%20instance%20method%20selectors",
-			"properties.json" : {
-				"classinstvars" : [
-					"current" ],
-				"instvars" : [
-					"name" ],
-				"name" : "CypressMockBasic",
-				"super" : "Object" }
-		 },
-		{
-			"name" : "Object.extension",
-			"instance" : [
-				{
-					"name" : "isCypressMockBasic.st",
-					"contents" : "%2ACypress-Mocks%0AisCypressMockBasic%0A%09%5Efalse"
-				 }			],
-			"class" : [
-			],
-			"properties.json" : {
-				"name" : "Object" }
-		 }
-	],
-	"properties.json" : {
-		 }
-}'.
-!
-
-testPharoJsonx
-
-	self compileJSON: '{
-	"name" : "Cypress-Mocks.package",
-	"properties.json" : {
-		 }
-}'.
-! !
-
+
+!classDefinition: #CypressLoaderTest category: #'Cypress-Tests'!
 CypressAbstractTest subclass: #CypressLoaderTest
 	instanceVariableNames: ''
-	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Tests'!
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Cypress-Tests'!
 
 !CypressLoaderTest methodsFor: 'running'!
-
 tearDown
 
 	| name |
@@ -505,8 +418,8 @@ tearDown
 		 updatePackage: (CypressPackageDefinition new name: name)
 ! !
 
-!CypressLoaderTest methodsFor: 'testing'!
 
+!CypressLoaderTest methodsFor: 'testing'!
 testLoad
 
 	| name |
@@ -515,12 +428,15 @@ testLoad
 		 updatePackage: (CypressPackageDefinition new name: name)
 ! !
 
+
+!classDefinition: #CypressPatchTest category: #'Cypress-Tests'!
 CypressAbstractTest subclass: #CypressPatchTest
 	instanceVariableNames: ''
-	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Tests'!
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Cypress-Tests'!
 
 !CypressPatchTest methodsFor: 'testing'!
-
 testDictionaryOfPatchOperations
 	"loader uses dictionary for managing patch operations ... ensure that Amber Dictionaries stand up"
 
@@ -530,8 +446,9 @@ testDictionaryOfPatchOperations
 		dict at: each put: each ].
 	self baseTargetPatch do: [:each | 
 		self assert: (dict at: each) = each ].
-!
+! !
 
+!CypressPatchTest methodsFor: 'testing'!
 testPatch
 
 	| baseSnapshot targetSnapshot patch operations |
@@ -541,8 +458,9 @@ testPatch
 	operations := patch operations.
 	self assert: operations size = 4.
 	self assert: operations = self baseTargetPatch
-!
+! !
 
+!CypressPatchTest methodsFor: 'testing'!
 testPatchOperationEquality
 
 	| className modification removal addition |
@@ -584,19 +502,23 @@ testPatchOperationEquality
 	self assert: addition = addition.
 ! !
 
+
+!classDefinition: #CypressSnapshotTest category: #'Cypress-Tests'!
 CypressAbstractTest subclass: #CypressSnapshotTest
 	instanceVariableNames: ''
-	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Tests'!
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Cypress-Tests'!
 
 !CypressSnapshotTest methodsFor: 'testing'!
-
 testSnapshot
 	| name pkg  |
 	name := 'Cypress-Mocks'.
 	pkg := CypressPackageDefinition new name: name.
 	self validatePackage: pkg against: self baseDefinitions
-!
+! !
 
+!CypressSnapshotTest methodsFor: 'testing'!
 testSnapshotEquality
 	| name pkg packageDefinitions expectedDefinitions |
 	name := 'Cypress-Mocks'.
@@ -606,12 +528,15 @@ testSnapshotEquality
 	self assert: packageDefinitions = expectedDefinitions
 ! !
 
+
+!classDefinition: #CypressStructureTest category: #'Cypress-Tests'!
 CypressAbstractTest subclass: #CypressStructureTest
 	instanceVariableNames: ''
-	classVariableNames: '' poolDictionaries: '' category: 'Cypress-Tests'!
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Cypress-Tests'!
 
 !CypressStructureTest methodsFor: 'tests'!
-
 testClassStructure
 
 	| jsObject packageStructure classStructure classProperties |
@@ -638,14 +563,16 @@ testClassStructure
 	self assert: (classProperties at: 'name') = 'Object'.
 	self assert: classStructure instanceMethods size = 1.
 	self assert: classStructure classMethods size = 0.
-!
+! !
 
+!CypressStructureTest methodsFor: 'tests'!
 testJson
 	"Let's compile the JSON without errors"
 
 	self compileJSON: self basePackageStructureJson
-!
+! !
 
+!CypressStructureTest methodsFor: 'tests'!
 testPackageStructureFromJson
 
 	| packageStructure classStructure classProperties |
@@ -655,22 +582,25 @@ testPackageStructureFromJson
 	self assert: packageStructure properties isEmpty.
 	self assert: packageStructure extensions size = 1.
 	self assert: packageStructure classes size = 1.
-!
+! !
 
+!CypressStructureTest methodsFor: 'tests'!
 testPackageStructureFromPackage
 
 	| packageStructure |
 	packageStructure := CypressPackageStructure fromPackage: (CypressPackageDefinition new name: 'Cypress-Mocks').
 	self validatePackage: packageStructure against: self baseDefinitions
-!
+! !
 
+!CypressStructureTest methodsFor: 'tests'!
 testPackageStructureSnapshot
 
 	| packageStructure |
 	packageStructure := CypressPackageStructure fromJs: (self compileJSON: self basePackageStructureJson).
 	self validatePackage: packageStructure against: self baseDefinitions
-!
+! !
 
+!CypressStructureTest methodsFor: 'tests'!
 testPackageStructureToJson
 
 	| packageStructure stream json |
@@ -679,8 +609,9 @@ testPackageStructureToJson
 	packageStructure writeJsonOn: stream.
 	json := stream contents.
 	self assert: self basePackageStructureJson = json
-!
+! !
 
+!CypressStructureTest methodsFor: 'tests'!
 testPropertyDictionaryRead
 
 	| propertyDictionary phoneNumbers |
@@ -692,8 +623,9 @@ testPropertyDictionaryRead
 	self assert: phoneNumbers size = 2.
 	self assert: ((phoneNumbers at: 1) at: 'number') = '212 555-1234'.
 	self assert: ((phoneNumbers at: 2) at: 'number') = '646 555-4567'.
-!
+! !
 
+!CypressStructureTest methodsFor: 'tests'!
 testPropertyDictionaryWrite
 
 	| propertyDictionary stream |
@@ -702,4 +634,3 @@ testPropertyDictionaryWrite
 	propertyDictionary writeCypressJsonOn: stream indent: 0.
 	self assert: stream contents = self sampleJson
 ! !
-
