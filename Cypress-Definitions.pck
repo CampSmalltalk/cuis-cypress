@@ -1,4 +1,4 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 23 April 2012 at 9:09:13 pm'!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 23 April 2012 at 9:33:58 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #CypressDefinition category: #'Cypress-Definitions'!
 Object subclass: #CypressDefinition
@@ -304,6 +304,15 @@ description
 
 	^ Array with: name
 ! !
+
+!CypressClassDefinition methodsFor: 'comparing' stamp: 'dkh 4/23/2012 21:30'!
+hash
+    | hash |
+    hash := String stringHash: name initialHash: 0.
+    hash := String stringHash: superclassName initialHash: hash.
+    hash := String stringHash: (category ifNil: [ '' ]) initialHash: hash.
+    instVarNames , classInstVarNames do: [ :vName | hash := String stringHash: vName initialHash: hash ].
+    ^ hash! !
 
 !CypressClassDefinition methodsFor: 'accessing'!
 instVarNames

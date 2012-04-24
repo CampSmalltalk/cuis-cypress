@@ -1,4 +1,4 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 23 April 2012 at 8:40:48 pm'!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 23 April 2012 at 9:34:04 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #CypressAbstractTest category: #'Cypress-Tests'!
 TestCase subclass: #CypressAbstractTest
@@ -276,11 +276,10 @@ And some [UTF8 samples][2]:
 [2]: http://www.columbia.edu/~fdc/utf8/'
 ! !
 
-!CypressAbstractTest methodsFor: 'private'!
+!CypressAbstractTest methodsFor: 'private' stamp: 'dkh 4/23/2012 21:33'!
 compileJSON: aJsonString
 
-	^(Compiler new eval: '(', aJsonString , ')')
-! !
+	^CypressJsonParser parse: aJsonString! !
 
 !CypressAbstractTest methodsFor: 'private'!
 sampleJson
