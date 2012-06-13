@@ -1,5 +1,5 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 3:29:19 pm'!
-'Description Please enter a description for this package '!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1294] on 6 June 2012 at 2:43:49 pm'!
+'Description Mock package example. Should be cross-dialect.'!
 !classDefinition: #CypressMockBasic category: #'Cypress-Mocks'!
 Object subclass: #CypressMockBasic
 	instanceVariableNames: 'name'

@@ -1,5 +1,5 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1260] on 24 April 2012 at 3:30:21 pm'!
-'Description Please enter a description for this package '!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1306] on 13 June 2012 at 9:07:15 am'!
+'Description Basic definitions for Cypress. Install first.'!
 !classDefinition: #CypressDefinition category: #'Cypress-Definitions'!
 Object subclass: #CypressDefinition
 	instanceVariableNames: ''
@@ -153,11 +153,6 @@ asCypressMethodDefinition
 		source: self getSource
 ! !
 
-!CompiledMethod methodsFor: '*Cypress-Definitions' stamp: 'dkh 4/23/2012 21:01'!
-category
-
-	^self methodClass organization categoryOfElement: self selector! !
-
 !CypressAddition methodsFor: 'comparing'!
 = aPatchOperation
 	^(super = aPatchOperation) and: [self definition = aPatchOperation definition]
@@ -243,10 +238,10 @@ of: aDefinition
 		and: [comment = aDefinition comment]]]]]
 ! !
 
-!CypressClassDefinition methodsFor: 'loading'!
+!CypressClassDefinition methodsFor: 'loading' stamp: 'jmv 6/7/2012 00:07'!
 actualClass
 
-	^Smalltalk current at: self name
+	^Smalltalk at: self name
 ! !
 
 !CypressClassDefinition methodsFor: 'converting'!
@@ -285,11 +280,11 @@ comment
 	^comment
 ! !
 
-!CypressClassDefinition methodsFor: 'loading'!
+!CypressClassDefinition methodsFor: 'loading' stamp: 'jmv 6/7/2012 00:07'!
 createClass
 
 	| superClass |
-	superClass := Smalltalk current at: self superclassName.
+	superClass := Smalltalk at: self superclassName.
 	^ClassBuilder new
 		superclass: superClass 
 		subclass: self name
@@ -333,12 +328,12 @@ name
 	^name
 ! !
 
-!CypressClassDefinition methodsFor: 'initialization'!
+!CypressClassDefinition methodsFor: 'initialization' stamp: 'jmv 6/7/2012 00:09'!
 name: aClassName superclassName: aSuperclassName category: aCategory instVarNames: anInstanceVariableNames classInstVarNames: aClassInstanceVariableNames comment: aComment
 
-	name := aClassName.
-	superclassName := aSuperclassName.
-	category := aCategory.
+	name := aClassName asSymbol.
+	superclassName := aSuperclassName asSymbol.
+	category := aCategory asSymbol.
 	instVarNames := anInstanceVariableNames.
 	classInstVarNames := aClassInstanceVariableNames.
 	comment := aComment
@@ -364,11 +359,11 @@ provisions
 	^{ self name }
 ! !
 
-!CypressClassDefinition methodsFor: 'dependency'!
+!CypressClassDefinition methodsFor: 'dependency' stamp: 'jmv 6/7/2012 00:04'!
 requirements
 	"Answer list of global names required by this definition"
 
-	^{self name}
+	^{self superclassName}
 ! !
 
 !CypressClassDefinition methodsFor: 'printString'!
@@ -386,10 +381,10 @@ superclassName
 	^superclassName
 ! !
 
-!CypressClassDefinition methodsFor: 'loading'!
+!CypressClassDefinition methodsFor: 'loading' stamp: 'jmv 6/7/2012 00:07'!
 unloadDefinition
 
-	Smalltalk current removeClass: self actualClass.
+	Smalltalk removeClass: self actualClass.
 ! !
 
 !CypressClassDefinition class methodsFor: 'instance creation'!
@@ -1044,10 +1039,10 @@ printString
 	^super printString, '(', name, ')'
 ! !
 
-!CypressPackageDefinition methodsFor: 'snapshotting' stamp: 'dkh 4/23/2012 20:53'!
+!CypressPackageDefinition methodsFor: 'snapshotting' stamp: 'jmv 6/13/2012 09:05'!
 snapshot
     | package definitions map classMap |
-    package := CodePackage named: self name.
+    package := CodePackage named: self name createIfAbsent: true registerIfNew: false.
     definitions := OrderedCollection new.
     (ChangeSet superclassOrder: package classes)
         do: [ :cls | 
@@ -1077,7 +1072,7 @@ snapshot
                                 ifTrue: [ map at: category put: methods ] ].
                     (map keys sorted: [ :a :b | a <= b ])
                         do: [ :category | 
-                            ((map at: category) sorted: [ :a :b | a selector <= b selector ])
+                            ((map at: category) sorted: [ :a :b | a <= b ])
                                 do: [ :method | defs add: (aClass compiledMethodAt: method) asCypressMethodDefinition ] ].
                     defs notEmpty
                         ifTrue: [ classMap at: each put: defs ] ] ].
@@ -1305,8 +1300,3 @@ definitions: aDefinitions
 
 	^(self new) definitions: aDefinitions
 ! !
-
-!SystemDictionary methodsFor: '*Cypress-Definitions' stamp: 'dkh 4/23/2012 21:06'!
-classes
-
-	^self classNames collect: [:each | self at: each ]! !
