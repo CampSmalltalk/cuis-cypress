@@ -34,7 +34,11 @@ I started the amber-cypress[2] with the intent of writing reference implementati
 When I finished that work, I started the cuis-cypress[5] project and that's when you got involved and finished up the work, quite nicely.
 
 [1] http://portal.sliderocket.com/vmware/STIC-2012-Practical-Git-for-Smalltalk
+
 [2] https://github.com/CampSmalltalk/Cypress/blob/master/img/CypressStructure-STIC2012.png
+
 [3] https://github.com/CampSmalltalk/STIG
+
 [4] https://github.com/CampSmalltalk/amber-cypress
+
 [5] https://github.com/CampSmalltalk/cuis-cypress
