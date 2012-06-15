@@ -1,4 +1,4 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1294] on 6 June 2012 at 2:44:46 pm'!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1308] on 15 June 2012 at 12:30:21 am'!
 'Description Just the tests.'!
 !classDefinition: #CypressAbstractTest category: #'Cypress-Tests'!
 TestCase subclass: #CypressAbstractTest
@@ -618,12 +618,12 @@ testPropertyDictionaryRead
 	self assert: ((phoneNumbers at: 2) at: 'number') = '646 555-4567'.
 ! !
 
-!CypressStructureTest methodsFor: 'tests' stamp: 'dkh 4/23/2012 23:59'!
+!CypressStructureTest methodsFor: 'tests' stamp: 'jmv 6/14/2012 23:08'!
 testPropertyDictionaryWrite
 
 	| propertyDictionary stream x y |
 	propertyDictionary := (self compileJSON: self sampleJson) asCypressPropertyObject.
 	stream := WriteStream on: String new.
-	propertyDictionary writeCypressJsonOn: stream indent: 0.
+	propertyDictionary writeCypressJsonOn: stream forHtml: true indent: 0.
 	self assert: (x:= stream contents withLineEndings: String lfString)  = (y := self sampleJson withLineEndings: String lfString)
 ! !

@@ -1,4 +1,4 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1306] on 13 June 2012 at 9:15:12 am'!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1308] on 15 June 2012 at 12:30:19 am'!
 'Description Install after Cypress-Definitions. Includes package reader and writer.
 
 View class comments for CypressPackageReader and CypressPackageWriter'!
@@ -54,7 +54,7 @@ CypressClassStructure class
 
 !classDefinition: #CypressMethodStructure category: #'Cypress-Structure'!
 CypressStructure subclass: #CypressMethodStructure
-	instanceVariableNames: 'source isMetaclass classStructure'
+	instanceVariableNames: 'source isMetaclass classStructure timeStamp'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Cypress-Structure'!
@@ -91,8 +91,8 @@ asCypressPropertyObject
 	^self collect: [:each | each asCypressPropertyObject ]
 ! !
 
-!Array methodsFor: '*Cypress-Structure' stamp: 'dkh 4/23/2012 23:36'!
-writeCypressJsonOn: aStream  indent: startIndent
+!Array methodsFor: '*Cypress-Structure' stamp: 'jmv 6/14/2012 23:07'!
+writeCypressJsonOn: aStream forHtml: forHtml indent: startIndent
 
 	| indent |
 	aStream 
@@ -102,14 +102,14 @@ writeCypressJsonOn: aStream  indent: startIndent
 	1 to: self size do: [:index | | item | 
 		item := self at: index.
 		aStream tab: indent.
-		item writeCypressJsonOn: aStream  indent: indent.
+		item writeCypressJsonOn: aStream forHtml: forHtml indent: indent.
 		index < self size ifTrue: [ aStream nextPutAll: ','; newLine ]].
 	self size = 0 ifTrue: [ aStream tab: indent ].
 	aStream nextPutAll: ' ]'
 ! !
 
-!Boolean methodsFor: '*Cypress-Structure'!
-writeCypressJsonOn: aStream  indent: startIndent
+!Boolean methodsFor: '*Cypress-Structure' stamp: 'jmv 6/14/2012 23:07'!
+writeCypressJsonOn: aStream forHtml: forHtml indent: startIndent
 
 	aStream 
 		nextPutAll: self printString
@@ -303,7 +303,7 @@ superclassName: aString
 	^self properties at: 'super' put: aString
 ! !
 
-!CypressClassStructure methodsFor: 'writing' stamp: 'dkh 4/23/2012 23:38'!
+!CypressClassStructure methodsFor: 'writing' stamp: 'jmv 6/14/2012 23:09'!
 writeJsonOn: aStream  indent: startIndent
 
 	| indent methods |
@@ -355,14 +355,14 @@ writeJsonOn: aStream  indent: startIndent
 				tab: indent;
 				nextPutAll: '"README.md" : ';
 				yourself.
-			self comment writeCypressJsonOn: aStream indent: indent ].
+			self comment writeCypressJsonOn: aStream forHtml: true indent: indent ].
 	aStream
 		nextPutAll: ',';
 		newLine;
 		tab: indent;
 		nextPutAll: '"properties.json" : ';
 		yourself.
-	self properties writeCypressJsonOn: aStream indent: indent.
+	self properties writeCypressJsonOn: aStream forHtml: true indent: indent.
 	indent := indent - 1.
 	aStream
 		newLine;
@@ -651,7 +651,7 @@ parse: aString
 parseStream: aStream
 	^ (self on: aStream) parse! !
 
-!CypressMethodStructure methodsFor: 'converting'!
+!CypressMethodStructure methodsFor: 'converting' stamp: 'jmv 6/14/2012 23:50'!
 asCypressMethodDefinition
 
 	^CypressMethodDefinition 
@@ -660,7 +660,7 @@ asCypressMethodDefinition
 		selector: self selector
 		category: self category
 		source: self source
-! !
+		timeStamp: self timeStamp! !
 
 !CypressMethodStructure methodsFor: 'accessing'!
 category
@@ -725,14 +725,14 @@ fromJs: jsObject  named: methodNameParts
 		ifFalse: [ ext = '.json' ifTrue: [  properties := jsObject at: 'contents' ] ]
 ! !
 
-!CypressMethodStructure methodsFor: 'initialization'!
+!CypressMethodStructure methodsFor: 'initialization' stamp: 'jmv 6/15/2012 00:21'!
 fromMethodDefinition: methodDefinition
 
 	self isMetaclass: methodDefinition classIsMeta.
 	self selector: methodDefinition selector.
 	self category: methodDefinition category.
 	self source: methodDefinition source.
-! !
+	self timeStamp: methodDefinition timeStamp.! !
 
 !CypressMethodStructure methodsFor: 'accessing'!
 isMetaclass
@@ -782,7 +782,18 @@ source: aString
 	source := aString
 ! !
 
-!CypressMethodStructure methodsFor: 'writing' stamp: 'dkh 4/23/2012 23:37'!
+!CypressMethodStructure methodsFor: 'accessing' stamp: 'jmv 6/14/2012 23:50'!
+timeStamp
+
+	^timeStamp
+! !
+
+!CypressMethodStructure methodsFor: 'accessing' stamp: 'jmv 6/14/2012 23:51'!
+timeStamp: aTimeStamp
+
+	timeStamp := aTimeStamp! !
+
+!CypressMethodStructure methodsFor: 'writing' stamp: 'jmv 6/14/2012 23:09'!
 writeJsonOn: aStream  indent: startIndent
 
 	| indent |
@@ -802,7 +813,7 @@ writeJsonOn: aStream  indent: startIndent
 		tab: indent;
 		nextPutAll: '"contents"';
 		nextPutAll: ' : '.
-	self cypressSource writeCypressJsonOn: aStream indent: indent.
+	self cypressSource writeCypressJsonOn: aStream forHtml: true indent: indent.
 	indent := indent - 1.
 	aStream
 		newLine;
@@ -861,62 +872,88 @@ read
     	self readPropertiesFile.
 	self readPackageStructure! !
 
-!CypressPackageReader methodsFor: 'reading' stamp: 'dkh 4/23/2012 20:19'!
+!CypressPackageReader methodsFor: 'reading' stamp: 'jmv 6/14/2012 23:45'!
 readClassStructureFromEntry: classEntry
+	| classDirectory methodPropertiesDict classPropertiesDict classComment entries classStructure |
+	classDirectory _ classEntry asFileDirectory.
+	entries _ classDirectory entries.
+	(entries
+		detect: [ :entry | entry name = 'methodProperties.json' ]
+		ifNone: [ ]) ifNotNil: [ :propertyEntry |
+		propertyEntry readStreamDo: [ :fileStream |
+			methodPropertiesDict _ CypressJsonParser parseStream: fileStream ]].
+	(entries
+		detect: [ :entry | entry name = 'properties.json' ]
+		ifNone: [ ]) ifNotNil: [ :propertyEntry |
+		propertyEntry readStreamDo: [ :fileStream |
+			classPropertiesDict _ CypressJsonParser parseStream: fileStream ]].
+	(entries
+		detect: [ :entry | entry name = 'README.md' ]
+		ifNone: [ ]) ifNotNil: [ :commentEntry |
+		commentEntry readStreamDo: [ :fileStream |
+			classComment _ fileStream contents ]].
+	classStructure _ self
+		classStructureFrom: classPropertiesDict
+		comment: classComment.
+	self
+		readMethodStructureFor: classStructure
+		in: entries
+		methodProperties: methodPropertiesDict.
+	^ classStructure.! !
 
-    | classDirectory classPropertiesDict classComment entries classStructure |
-    classDirectory := classEntry asFileDirectory.
-    ((entries := classDirectory entries) detect: [ :entry | entry name = 'properties.json' ] ifNone: [  ])
-        ifNotNil: [ :propertyEntry | propertyEntry readStreamDo: [ :fileStream | classPropertiesDict := CypressJsonParser parseStream: fileStream ] ].
-    (entries detect: [ :entry | entry name = 'README.md' ] ifNone: [  ])
-        ifNotNil: [ :commentEntry | commentEntry readStreamDo: [ :fileStream | classComment := fileStream contents ] ].
-    classStructure := self classStructureFrom: classPropertiesDict comment: classComment.
-    self readMethodStructureFor: classStructure in: entries.
-	^classStructure! !
-
-!CypressPackageReader methodsFor: 'reading' stamp: 'dkh 4/23/2012 20:20'!
+!CypressPackageReader methodsFor: 'reading' stamp: 'jmv 6/14/2012 23:45'!
 readExtensionClassStructureFromEntry: classEntry
+	| classDirectory methodPropertiesDict classPropertiesDict entries classStructure |
+	classDirectory _ classEntry asFileDirectory.
+	entries _ classDirectory entries.
+	(entries
+		detect: [ :entry | entry name = 'methodProperties.json' ]
+		ifNone: [ ]) ifNotNil: [ :propertyEntry |
+		propertyEntry readStreamDo: [ :fileStream |
+			methodPropertiesDict _ CypressJsonParser parseStream: fileStream ]].
+	(entries
+		detect: [ :entry | entry name = 'properties.json' ]
+		ifNone: [ ]) ifNotNil: [ :propertyEntry |
+		propertyEntry readStreamDo: [ :fileStream |
+			classPropertiesDict _ CypressJsonParser parseStream: fileStream ]].
+	classStructure _ self classStructureFrom: classPropertiesDict.
+	self
+		readMethodStructureFor: classStructure
+		in: entries
+		methodProperties: methodPropertiesDict.
+	^ classStructure! !
 
-    | classDirectory classPropertiesDict entries classStructure |
-    classDirectory := classEntry asFileDirectory.
-    ((entries := classDirectory entries) detect: [ :entry | entry name = 'properties.json' ] ifNone: [  ])
-        ifNotNil: [ :propertyEntry | propertyEntry readStreamDo: [ :fileStream | classPropertiesDict := CypressJsonParser parseStream: fileStream ] ].
-    classStructure := self classStructureFrom: classPropertiesDict.
-    self readMethodStructureFor: classStructure in: entries.
-	^classStructure! !
-
-!CypressPackageReader methodsFor: 'reading' stamp: 'jmv 6/6/2012 23:34'!
-readMethodStructureFor: classStructure in: entries
-
-    entries
-        do: [ :entry | 
-            | methods isMeta |
-		isMeta := false.
- 		methods := entry name = 'class'
-                ifTrue: [ 
-			isMeta := true.
-			classStructure classMethods ]
-		    ifFalse: [ classStructure instanceMethods ].
-            (entry name = 'instance' or: [ entry name = 'class' ])
-                ifTrue: [ 
-                    (entry asFileDirectory entries select: [ :each | each name first ~= $. and: [ each name endsWith: '.st' ]])
-                        do: [ :methodEntry | 
-                            methodEntry
-                                readStreamDo: [ :fileStream | 
-                                    | category source selector |
-                                    category := fileStream nextLine.
-                                    source := fileStream upToEnd.
-						selector := Parser new parseSelector: source.
-                                     methods 
-							at: selector
-							put: ((CypressMethodStructure new)
-									classStructure: classStructure;
-									name: selector;
-									isMetaclass: isMeta;
-									selector: selector;
-									category: category;
-									source: source;
-									yourself) ] ] ] ]! !
+!CypressPackageReader methodsFor: 'reading' stamp: 'jmv 6/14/2012 23:54'!
+readMethodStructureFor: classStructure in: entries methodProperties: methodPropertiesDict
+	entries do: [ :entry | | methods isMeta |
+		isMeta _ false.
+		methods _ entry name = 'class'
+			ifTrue: [
+				isMeta _ true.
+				classStructure classMethods ]
+			ifFalse: [ classStructure instanceMethods ].
+		(entry name = 'instance' or: [ entry name = 'class' ]) ifTrue: [
+			(entry asFileDirectory entries select: [ :each |
+				each name first ~= $. and: [ each name endsWith: '.st' ]]) do: [ :methodEntry |
+				methodEntry readStreamDo: [ :fileStream | | category source selector timeStamp |
+					category _ fileStream nextLine.
+					source _ fileStream upToEnd.
+					selector _ Parser new parseSelector: source.
+					timeStamp _ (methodPropertiesDict
+						at: (isMeta ifTrue: ['class'] ifFalse: ['instance']))
+						at: selector.
+					methods
+						at: selector
+						put:
+							(CypressMethodStructure new
+								 classStructure: classStructure;
+								 name: selector;
+								 isMetaclass: isMeta;
+								 selector: selector;
+								 category: category;
+								 source: source;
+								 timeStamp: timeStamp
+								 yourself) ]]]]! !
 
 !CypressPackageReader methodsFor: 'reading' stamp: 'jmv 6/6/2012 23:06'!
 readPackageStructure
@@ -1072,7 +1109,7 @@ snapshot
 	^ CypressSnapshot definitions: definitions
 ! !
 
-!CypressPackageStructure methodsFor: 'writing' stamp: 'dkh 4/23/2012 23:39'!
+!CypressPackageStructure methodsFor: 'writing' stamp: 'jmv 6/14/2012 23:09'!
 writeJsonOn: aStream  indent: startIndent
 
 	| indent |
@@ -1108,7 +1145,7 @@ writeJsonOn: aStream  indent: startIndent
 		newLine;
 		tab: indent;
 		nextPutAll: '"properties.json" : '.
-	self properties writeCypressJsonOn: aStream indent: indent.
+	self properties writeCypressJsonOn: aStream forHtml: true indent: indent.
 	indent := indent - 1.
 	aStream 
 		newLine;
@@ -1206,7 +1243,7 @@ writeClassComment: classStructure on: fileStream
 
     fileStream nextPutAll: (classStructure comment withLineEndings: String lfString)! !
 
-!CypressPackageWriter methodsFor: 'writing' stamp: 'jmv 5/12/2012 19:54'!
+!CypressPackageWriter methodsFor: 'writing' stamp: 'jmv 6/14/2012 23:08'!
 writeClassStructure: classStructure on: fileStream
 
     | properties |
@@ -1215,7 +1252,7 @@ writeClassStructure: classStructure on: fileStream
     properties at: 'super' put: classStructure superclassName.
     properties at: 'instvars' put: classStructure instanceVariableNames.
     properties at: 'classinstvars' put: classStructure classInstanceVariableNames.
-    properties writeCypressJsonOn: fileStream  indent: 0! !
+    properties writeCypressJsonOn: fileStream forHtml: true indent: 0! !
 
 !CypressPackageWriter methodsFor: 'writing' stamp: 'dkh 4/22/2012 13:24:15'!
 writeClassStructure: classStructure to: classPath
@@ -1231,7 +1268,7 @@ writeClassStructure: classStructure to: classPath
         extension: '.json'
         visit: [:fileStream | self writeClassStructure: classStructure on: fileStream ]! !
 
-!CypressPackageWriter methodsFor: 'writing' stamp: 'jmv 5/12/2012 19:54'!
+!CypressPackageWriter methodsFor: 'writing' stamp: 'jmv 6/14/2012 23:08'!
 writeExtensionClassStructure: classStructure to: classPath
 
      self
@@ -1241,7 +1278,7 @@ writeExtensionClassStructure: classStructure to: classPath
         visit: [:fileStream |  | properties |
     		properties := Dictionary new.
     		properties at: 'name' put: classStructure className.
-    		properties writeCypressJsonOn: fileStream  indent: 0 ]! !
+    		properties writeCypressJsonOn: fileStream forHtml: true indent: 0 ]! !
 
 !CypressPackageWriter methodsFor: 'private' stamp: 'jmv 6/6/2012 12:03'!
 writeInDirectoryName: directoryNameOrPath fileName: fileName extension: ext visit: visitBlock
@@ -1274,36 +1311,48 @@ writePackageStructure
 	self writePackageStructureClasses:  self packageStructure extensions isClassExtension: true
 ! !
 
-!CypressPackageWriter methodsFor: 'writing' stamp: 'dkh 4/22/2012 13:24:15'!
-writePackageStructureClasses:  classStructures isClassExtension: isClassExtension
-    | classDirExtension |
-	
-    classDirExtension := isClassExtension
+!CypressPackageWriter methodsFor: 'writing' stamp: 'jmv 6/15/2012 00:19'!
+writePackageStructureClasses: classStructures isClassExtension: isClassExtension
+	| classDirExtension methodProperties classMethodsMap instanceMethodMap |
+	classDirExtension _ isClassExtension
 		ifTrue: [ '.extension' ]
 		ifFalse: [ '.class' ].
-    classStructures
-        do: [ :classStructure | 
-            | classPath instanceMethodPath classMethodPath |
-            classPath := classStructure className , classDirExtension , FileDirectory slash.
-	      isClassExtension
-			ifTrue: [ self writeExtensionClassStructure: classStructure to: classPath ]
-            	ifFalse: [ self writeClassStructure: classStructure to: classPath ].
-            instanceMethodPath := classPath , 'instance' , FileDirectory slash.
-            classStructure instanceMethods
-                do: [ :methodStructure |  self writeMethodStructure: methodStructure to: instanceMethodPath ].
-            classMethodPath := classPath , 'class' , FileDirectory slash.
-            classStructure classMethods
-                do: [ :methodStructure |  self writeMethodStructure: methodStructure to: classMethodPath ] ].
-! !
+	classStructures do: [ :classStructure | | classPath instanceMethodPath classMethodPath |
+		classPath _ classStructure className , classDirExtension , FileDirectory slash.
+		isClassExtension
+			ifTrue: [
+				self writeExtensionClassStructure: classStructure to: classPath ]
+			ifFalse: [
+				self writeClassStructure: classStructure to: classPath ].
+		methodProperties _ Dictionary new.
+		instanceMethodPath _ classPath , 'instance' , FileDirectory slash.
+		methodProperties at: 'instance' put: (instanceMethodMap _ Dictionary new).
+		classStructure instanceMethods do: [ :methodStructure |
+			self writeMethodStructure: methodStructure to: instanceMethodPath.
+			instanceMethodMap
+				at: methodStructure selector asString
+				put: methodStructure timeStamp ].
+		classMethodPath _ classPath , 'class' , FileDirectory slash.
+		methodProperties at: 'class' put: (classMethodsMap _ Dictionary new).
+		classStructure classMethods do: [ :methodStructure |
+			self writeMethodStructure: methodStructure to: classMethodPath.
+			classMethodsMap
+				at: methodStructure selector asString
+				put: methodStructure timeStamp ].
+		self
+			writeInDirectoryName: classPath
+			fileName: 'methodProperties'
+			extension: '.json'
+			visit: [ :fileStream | methodProperties writeCypressJsonOn: fileStream forHtml: false indent: 0 ]]! !
 
-!CypressPackageWriter methodsFor: 'writing' stamp: 'jmv 5/12/2012 19:54'!
+!CypressPackageWriter methodsFor: 'writing' stamp: 'jmv 6/14/2012 23:08'!
 writePropertiesFile
 
     self
         writeInDirectoryName: '.'
         fileName: 'properties'
         extension: '.json'
-        visit: [:fileStream | Dictionary new writeCypressJsonOn: fileStream indent: 0 ]! !
+        visit: [:fileStream | Dictionary new writeCypressJsonOn: fileStream forHtml: true indent: 0 ]! !
 
 !CypressPackageWriter class methodsFor: 'as yet unclassified' stamp: 'dkh 4/22/2012 13:24:15'!
 initializeSpecials
@@ -1466,8 +1515,8 @@ fromJs: jsObject
 asCypressPropertyObject
     self associations do: [ :assoc | self at: assoc key put: assoc value asCypressPropertyObject ]! !
 
-!Dictionary methodsFor: '*Cypress-Structure' stamp: 'dkh 4/23/2012 23:54'!
-writeCypressJsonOn: aStream indent: startIndent
+!Dictionary methodsFor: '*Cypress-Structure' stamp: 'jmv 6/14/2012 23:10'!
+writeCypressJsonOn: aStream forHtml: forHtml indent: startIndent
     | indent count |
     indent := startIndent.
     aStream
@@ -1481,9 +1530,9 @@ writeCypressJsonOn: aStream indent: startIndent
             value := self at: key.
             count := count + 1.
             aStream tab: indent.
-            key writeCypressJsonOn: aStream indent: indent.
+            key writeCypressJsonOn: aStream forHtml: forHtml indent: indent.
             aStream nextPutAll: ' : '.
-            value writeCypressJsonOn: aStream indent: indent.
+            value writeCypressJsonOn: aStream forHtml: forHtml indent: indent.
             count < self size
                 ifTrue: [ 
                     aStream
@@ -1493,8 +1542,8 @@ writeCypressJsonOn: aStream indent: startIndent
         ifTrue: [ aStream tab: indent ].
     aStream nextPutAll: ' }'! !
 
-!Number methodsFor: '*Cypress-Structure'!
-writeCypressJsonOn: aStream  indent: startIndent
+!Number methodsFor: '*Cypress-Structure' stamp: 'jmv 6/14/2012 23:07'!
+writeCypressJsonOn: aStream forHtml: forHtml indent: startIndent
 
 	aStream 
 		nextPutAll: self printString
@@ -1528,11 +1577,13 @@ encodeForHTTP
 	].
 	^encodedStream contents.! !
 
-!String methodsFor: '*Cypress-Structure' stamp: 'dkh 4/23/2012 23:48'!
-writeCypressJsonOn: aStream  indent: startIndent
+!String methodsFor: '*Cypress-Structure' stamp: 'jmv 6/14/2012 23:13'!
+writeCypressJsonOn: aStream forHtml: forHtml indent: startIndent
 
 	aStream 
 		nextPutAll: '"';
-		nextPutAll: (self withLineEndings: String lfString) encodeForHTTP;
+		nextPutAll: (forHtml
+			ifTrue: [ (self withLineEndings: String lfString) encodeForHTTP ]
+			ifFalse: [ self withLineEndings: String lfString ]);
 		nextPutAll: '"'
 ! !

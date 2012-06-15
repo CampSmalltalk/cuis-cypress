@@ -1,4 +1,4 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1306] on 13 June 2012 at 9:07:15 am'!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1308] on 15 June 2012 at 12:30:16 am'!
 'Description Basic definitions for Cypress. Install first.'!
 !classDefinition: #CypressDefinition category: #'Cypress-Definitions'!
 Object subclass: #CypressDefinition
@@ -52,7 +52,7 @@ CypressLoader class
 
 !classDefinition: #CypressMethodDefinition category: #'Cypress-Definitions'!
 CypressDefinition subclass: #CypressMethodDefinition
-	instanceVariableNames: 'classIsMeta source category selector className'
+	instanceVariableNames: 'classIsMeta source category selector className timeStamp'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Cypress-Definitions'!
@@ -142,7 +142,7 @@ asCypressClassDefinition
 		comment: self comment
 ! !
 
-!CompiledMethod methodsFor: '*Cypress-Definitions' stamp: 'dkh 4/23/2012 21:02'!
+!CompiledMethod methodsFor: '*Cypress-Definitions' stamp: 'jmv 6/14/2012 23:50'!
 asCypressMethodDefinition
 
 	^CypressMethodDefinition 
@@ -151,6 +151,7 @@ asCypressMethodDefinition
 		selector: self selector
 		category: self category
 		source: self getSource
+		timeStamp: self timeStamp
 ! !
 
 !CypressAddition methodsFor: 'comparing'!
@@ -827,6 +828,16 @@ className: aName classIsMeta: isMetaclass selector: aSelector category: aCategor
 	source := aSource withLineEndings: String lfString.
 ! !
 
+!CypressMethodDefinition methodsFor: 'initialization' stamp: 'jmv 6/14/2012 23:49'!
+className: aName classIsMeta: isMetaclass selector: aSelector category: aCategory source: aSource timeStamp: aTimeStamp
+
+	className := aName asSymbol.
+	classIsMeta := isMetaclass.
+	selector := aSelector asSymbol.
+	category := aCategory asSymbol.
+	source := aSource withLineEndings: String lfString.
+	timeStamp := aTimeStamp! !
+
 !CypressMethodDefinition methodsFor: 'accessing'!
 description
 	^ Array	
@@ -857,13 +868,14 @@ isInitializer
 	^ self selector = 'initialize' and: [self classIsMeta]
 ! !
 
-!CypressMethodDefinition methodsFor: 'loading' stamp: 'dkh 4/24/2012 15:27'!
+!CypressMethodDefinition methodsFor: 'loading' stamp: 'jmv 6/14/2012 23:48'!
 loadMethodDefinition
 
 	self actualClass
 		compile: self source
 		classified: self category
-! !
+		withStamp: self timeStamp
+		notifying: nil.! !
 
 !CypressMethodDefinition methodsFor: 'loading'!
 postLoadOver: aDefinition
@@ -916,6 +928,12 @@ theNonMetaClass
 	^Smalltalk at: self className
 ! !
 
+!CypressMethodDefinition methodsFor: 'accessing' stamp: 'jmv 6/14/2012 23:57'!
+timeStamp
+
+	^timeStamp
+! !
+
 !CypressMethodDefinition methodsFor: 'loading' stamp: 'dkh 4/24/2012 15:28'!
 unloadDefinition
 
@@ -935,6 +953,23 @@ source: aSource
 		selector: aSelector
 		category: aCategory
 		source: aSource
+! !
+
+!CypressMethodDefinition class methodsFor: 'instance creation' stamp: 'jmv 6/14/2012 23:54'!
+className: aName
+classIsMeta: isMetaclass
+selector: aSelector
+category: aCategory
+source: aSource
+timeStamp: aTimeStamp
+
+	^(self new)
+		className: aName
+		classIsMeta: isMetaclass
+		selector: aSelector
+		category: aCategory
+		source: aSource
+		timeStamp: aTimeStamp
 ! !
 
 !CypressModification methodsFor: 'initialization'!
