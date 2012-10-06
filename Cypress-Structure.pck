@@ -1,4 +1,4 @@
-'From Cuis 4.0 of 21 April 2012 [latest update: #1308] on 15 June 2012 at 12:30:19 am'!
+'From Cuis 4.0 of 21 April 2012 [latest update: #1308] on 6 October 2012 at 10:37:02 pm'!
 'Description Install after Cypress-Definitions. Includes package reader and writer.
 
 View class comments for CypressPackageReader and CypressPackageWriter'!
@@ -1380,18 +1380,27 @@ initializeSpecials
 specials
     ^ specials ifNil: [ specials := self initializeSpecials ]! !
 
-!CypressPackageWriter class methodsFor: 'services' stamp: 'jmv 6/13/2012 09:06'!
+!CypressPackageWriter class methodsFor: 'services' stamp: 'bp 10/6/2012 22:19'!
 writeCodePackage: aCodePackage
 	"
 	For example:
 		CypressPackageWriter writeCodePackage: (CodePackage named: 'Cypress-Structure' createIfAbsent: true registerIfNew: false)
 		CypressPackageWriter writeCodePackage: (CodePackage named: 'Morphic' createIfAbsent: true registerIfNew: false)
 	"
+	self writeCodePackage: aCodePackage to: FileDirectory default! !
+
+!CypressPackageWriter class methodsFor: 'services' stamp: 'bp 10/6/2012 22:18'!
+writeCodePackage: aCodePackage to: aPackagesDirectory
+	"
+	For example:
+		CypressPackageWriter writeCodePackage: (CodePackage named: 'Cypress-Structure' createIfAbsent: true registerIfNew: false) to: FileDirectory default
+		CypressPackageWriter writeCodePackage: (CodePackage named: 'Morphic' createIfAbsent: true registerIfNew: false) to: FileDirectory default
+	"
 	CypressPackageWriter
 		writePackageStructure: 
 			(CypressPackageStructure fromPackage: 
 				(CypressPackageDefinition new name: aCodePackage packageName))
-		to: FileDirectory default! !
+		to: aPackagesDirectory! !
 
 !CypressPackageWriter class methodsFor: 'instance creation' stamp: 'dkh 4/22/2012 13:24:15'!
 writePackageStructure: aPackageStructure to: aPackagesDirectory
